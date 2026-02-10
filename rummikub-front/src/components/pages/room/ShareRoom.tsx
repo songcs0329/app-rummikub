@@ -25,7 +25,7 @@ export default function ShareRoom({ roomCode }: ShareRoomProps) {
   };
 
   return (
-    <Card>
+    <Card className="rounded-lg">
       <CardHeader>
         <CardTitle>방 공유하기</CardTitle>
       </CardHeader>
