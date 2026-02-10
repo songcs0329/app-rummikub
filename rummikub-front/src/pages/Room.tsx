@@ -1,6 +1,7 @@
 import { Navigate, useParams } from 'react-router';
 import { useRoomEvents } from '@/hooks/useRoomEvents';
 import { useCustomerStore } from '@/store/useCustomerStore';
+import PlayersContainer from '@/components/pages/room/PlayersContainer';
 
 function Room() {
   const { roomCode } = useParams();
@@ -17,14 +18,8 @@ function Room() {
       <div>{roomCode}</div>
       <div>{JSON.stringify(customer)}</div>
       {room && (
-        <div className="flex flex-col gap-y-2">
-          {room.players.map((player) => {
-            return (
-              <div key={player.id} className="border border-red-500">
-                {JSON.stringify(player)}
-              </div>
-            );
-          })}
+        <div className="flex flex-col gap-y-2 bg-red-100">
+          <PlayersContainer players={room.players} />
         </div>
       )}
     </div>
