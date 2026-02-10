@@ -11,7 +11,7 @@ function PlayerCard(props: PlayerCardProps) {
 
   return (
     <Card className="py-4">
-      <CardHeader className="px-2">
+      <CardHeader className="px-4">
         <CardTitle className="text-sm">{player.nickname}</CardTitle>
         <div className="flex items-center gap-1">
           {player.isHost && <Badge variant="default">방장</Badge>}

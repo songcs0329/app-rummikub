@@ -8,6 +8,7 @@ export const GAME_CONSTANTS = {
   JOKER_COUNT: 2,
   TILES_PER_SET: 2,
   ROOM_CODE_LENGTH: 6,
+  DISCONNECT_GRACE_PERIOD_MS: 30000,
 };
 
 export const TILE_COLORS = ['red', 'blue', 'yellow', 'black'] as const;

@@ -7,10 +7,13 @@ import type {
 } from '@/types/server.generated';
 import { useSocketStore } from '@/store/useSocketStore';
 import { useRoomStore } from '@/store/useRoomStore';
+import { useCustomerStore } from '@/store/useCustomerStore';
 
 export function useRoomEvents(roomCode: string | undefined) {
   const socket = useSocketStore((state) => state.socket);
   const isConnected = useSocketStore((state) => state.isConnected);
+
+  const customer = useCustomerStore((state) => state.customer);
 
   const room = useRoomStore((state) => state.room);
   const setRoom = useRoomStore((state) => state.setRoom);
@@ -45,7 +48,11 @@ export function useRoomEvents(roomCode: string | undefined) {
     // 레디 상태 변경 시 players 갱신
     socket.on('playerStatusChanged', handlePlayerStatusChanged);
 
-    socket.emit('findRoom', { roomCode });
+    if (!customer) {
+      socket.emit('findRoom', { roomCode });
+    } else {
+      socket.emit('rejoinRoom', { roomCode, playerId: customer.playerId });
+    }
 
     return () => {
       socket.off('roomFound', handleRoomFound);
@@ -54,7 +61,7 @@ export function useRoomEvents(roomCode: string | undefined) {
       socket.off('playerStatusChanged', handlePlayerStatusChanged);
       reset();
     };
-  }, [socket, isConnected, roomCode, setRoom, updatePlayers, reset]);
+  }, [socket, isConnected, customer, roomCode, setRoom, updatePlayers, reset]);
 
   return {
     room,

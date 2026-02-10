@@ -9,9 +9,18 @@ function Room() {
   const customer = useCustomerStore((state) => state.customer);
 
   const { room } = useRoomEvents(roomCode);
+  console.log('useRoomEvents ==>', room);
 
   if (!customer) return <Navigate to={`/?roomCode=${roomCode}`} replace />;
 
+  if (!room) return <div>room loading...</div>;
+
+  if (room?.gameStarted) {
+    // 게임 시작됐을 때 랜더링할 컴포넌트
+    return <div></div>;
+  }
+
+  // 게임 대기 때 랜더링할 컴포넌트
   return (
     <div>
       <h1>Room</h1>
