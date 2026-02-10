@@ -9,7 +9,6 @@ function Room() {
   const customer = useCustomerStore((state) => state.customer);
 
   const { room } = useRoomEvents(roomCode);
-  console.log('useRoomEvents ==>', room);
 
   if (!customer) return <Navigate to={`/?roomCode=${roomCode}`} replace />;
 
