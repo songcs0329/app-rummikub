@@ -5,7 +5,7 @@ import { useCustomerStore } from '@/store/useCustomerStore';
 function Room() {
   const { roomCode } = useParams();
 
-  const { customer } = useCustomerStore();
+  const customer = useCustomerStore((state) => state.customer);
 
   useFindRoom(roomCode);
 

@@ -3,7 +3,8 @@ import { createSocket } from '@/lib/socketUtils';
 import { useSocketStore } from '@/store/useSocketStore';
 
 export function useSocket() {
-  const { setSocket, setIsConnected } = useSocketStore();
+  const setSocket = useSocketStore((state) => state.setSocket);
+  const setIsConnected = useSocketStore((state) => state.setIsConnected);
 
   useEffect(() => {
     const socket = createSocket();

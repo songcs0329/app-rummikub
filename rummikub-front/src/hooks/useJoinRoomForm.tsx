@@ -17,8 +17,9 @@ type JoinRoomFormValues = z.infer<typeof joinRoomSchema>;
 export function useJoinRoomForm(initialRoomCode?: string) {
   const navigate = useNavigate();
 
-  const { socket } = useSocketStore();
-  const { customer, setCustomer } = useCustomerStore();
+  const socket = useSocketStore((state) => state.socket);
+  const customer = useCustomerStore((state) => state.customer);
+  const setCustomer = useCustomerStore((state) => state.setCustomer);
 
   const form = useForm<JoinRoomFormValues>({
     resolver: zodResolver(joinRoomSchema),

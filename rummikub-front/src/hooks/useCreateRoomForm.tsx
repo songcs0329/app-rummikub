@@ -16,8 +16,8 @@ type CreateRoomFormValues = z.infer<typeof createRoomSchema>;
 export function useCreateRoomForm() {
   const navigate = useNavigate();
 
-  const { socket } = useSocketStore();
-  const { setCustomer } = useCustomerStore();
+  const socket = useSocketStore((state) => state.socket);
+  const setCustomer = useCustomerStore((state) => state.setCustomer);
 
   const form = useForm<CreateRoomFormValues>({
     resolver: zodResolver(createRoomSchema),
