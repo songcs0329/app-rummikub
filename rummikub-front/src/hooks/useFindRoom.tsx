@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import type { RoomFoundData } from '@/types/rummikub-front.types';
+import type { RoomFoundPayload } from '@/types/server.generated';
 import { useSocketStore } from '@/store/useSocketStore';
 
 export function useFindRoom(roomCode: string | undefined) {
@@ -9,7 +9,7 @@ export function useFindRoom(roomCode: string | undefined) {
   useEffect(() => {
     if (!socket || !isConnected || !roomCode) return;
 
-    const handleRoomFound = (data: RoomFoundData) => {
+    const handleRoomFound = (data: RoomFoundPayload) => {
       console.log('Room found:', data);
     };
 
