@@ -1,6 +1,6 @@
 import { useSearchParams } from 'react-router';
-import CreateRoomForm from '@/components/CreateRoomForm';
-import JoinRoomForm from '@/components/JoinRoomForm';
+import CreateRoomForm from '@/components/pages/home/CreateRoomForm';
+import JoinRoomForm from '@/components/pages/home/JoinRoomForm';
 
 function Home() {
   const [searchParams] = useSearchParams();
