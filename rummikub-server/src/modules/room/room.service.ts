@@ -14,6 +14,7 @@ export class RoomService {
   private rooms: Map<string, Room> = new Map();
   private socketToRoom: Map<string, string> = new Map();
   private socketToPlayer: Map<string, string> = new Map();
+  private disconnectTimers: Map<string, NodeJS.Timeout> = new Map();
 
   constructor(private readonly gameService: GameService) {}
 
@@ -249,6 +250,90 @@ export class RoomService {
         player.tiles.splice(index, 1);
       }
     });
+
+    return room;
+  }
+
+  /**
+   * 소켓 연결 해제 시 소켓 매핑만 제거하고 플레이어는 방에 유지
+   * playerId와 roomCode를 반환하여 gateway에서 타이머 설정 가능
+   */
+  markDisconnecting(socketId: string): { playerId: string; roomCode: string } | null {
+    const roomCode = this.socketToRoom.get(socketId);
+    if (!roomCode) return null;
+
+    const playerId = this.socketToPlayer.get(socketId);
+    if (!playerId) return null;
+
+    // 소켓 매핑만 제거 (플레이어는 방에 유지)
+    this.socketToRoom.delete(socketId);
+    this.socketToPlayer.delete(socketId);
+
+    return { playerId, roomCode };
+  }
+
+  setDisconnectTimer(playerId: string, timer: NodeJS.Timeout): void {
+    this.disconnectTimers.set(playerId, timer);
+  }
+
+  cancelDisconnectTimer(playerId: string): void {
+    const timer = this.disconnectTimers.get(playerId);
+    if (timer) {
+      clearTimeout(timer);
+      this.disconnectTimers.delete(playerId);
+    }
+  }
+
+  /**
+   * 유예 기간 후 실제로 플레이어를 방에서 제거
+   */
+  removeDisconnectedPlayer(
+    playerId: string,
+    roomCode: string,
+  ): { leftPlayer: any; room: Room } | null {
+    this.disconnectTimers.delete(playerId);
+
+    const room = this.rooms.get(roomCode);
+    if (!room) return null;
+
+    const player = room.players.find((p) => p.id === playerId);
+    if (!player) return null;
+
+    const leftPlayerInfo = player.toPublicInfo();
+    room.players = room.players.filter((p) => p.id !== playerId);
+
+    if (room.players.length === 0) {
+      this.rooms.delete(roomCode);
+      return null;
+    }
+
+    if (player.isHost && room.players.length > 0) {
+      room.players[0].isHost = true;
+    }
+
+    if (room.gameStarted && room.currentTurnIndex >= room.players.length) {
+      room.currentTurnIndex = 0;
+    }
+
+    return { leftPlayer: leftPlayerInfo, room };
+  }
+
+  /**
+   * 재접속: 기존 플레이어의 소켓 ID를 새 것으로 교체
+   */
+  rejoinRoom(roomCode: string, playerId: string, newSocketId: string): Room {
+    const room = this.findRoom(roomCode);
+    const player = room.players.find((p) => p.id === playerId);
+
+    if (!player) {
+      throw new NotFoundException('플레이어를 찾을 수 없습니다.');
+    }
+
+    this.cancelDisconnectTimer(playerId);
+
+    player.socketId = newSocketId;
+    this.socketToRoom.set(newSocketId, roomCode);
+    this.socketToPlayer.set(newSocketId, playerId);
 
     return room;
   }

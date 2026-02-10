@@ -14,8 +14,10 @@ import {
   JoinRoomDto,
   PlayerActionDto,
   PlaceCombinationDto,
+  RejoinRoomDto,
 } from './dto';
 import { GameState } from '../game/entities/game-state.entity';
+import { GAME_CONSTANTS } from '../../common/constants/game.constants';
 
 @WebSocketGateway({
   cors: {
@@ -38,13 +40,23 @@ export class RoomGateway
   handleDisconnect(client: Socket) {
     console.log(`Client disconnected: ${client.id}`);
 
-    const result = this.roomService.handlePlayerDisconnect(client.id);
-    if (result) {
-      this.server.to(result.roomCode).emit('playerLeft', {
-        players: result.room.players.map((p) => p.toPublicInfo()),
-        leftPlayer: result.leftPlayer,
-      });
-    }
+    const info = this.roomService.markDisconnecting(client.id);
+    if (!info) return;
+
+    const timer = setTimeout(() => {
+      const result = this.roomService.removeDisconnectedPlayer(
+        info.playerId,
+        info.roomCode,
+      );
+      if (result) {
+        this.server.to(info.roomCode).emit('playerLeft', {
+          players: result.room.players.map((p) => p.toPublicInfo()),
+          leftPlayer: result.leftPlayer,
+        });
+      }
+    }, GAME_CONSTANTS.DISCONNECT_GRACE_PERIOD_MS);
+
+    this.roomService.setDisconnectTimer(info.playerId, timer);
   }
 
   @SubscribeMessage('createRoom')
@@ -105,6 +117,30 @@ export class RoomGateway
   ) {
     try {
       const room = this.roomService.findRoom(data.roomCode);
+
+      client.emit('roomFound', {
+        roomCode: room.roomCode,
+        players: room.players.map((p) => p.toPublicInfo()),
+        gameStarted: room.gameStarted,
+        maxPlayers: room.maxPlayers,
+      });
+    } catch (error) {
+      client.emit('error', { message: error.message });
+    }
+  }
+
+  @SubscribeMessage('rejoinRoom')
+  handleRejoinRoom(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: RejoinRoomDto,
+  ) {
+    try {
+      const room = this.roomService.rejoinRoom(
+        data.roomCode,
+        data.playerId,
+        client.id,
+      );
+      client.join(data.roomCode);
 
       client.emit('roomFound', {
         roomCode: room.roomCode,

@@ -65,6 +65,11 @@ export interface PlaceCombinationDto extends PlayerActionDto {
   combination: { tiles: Tile[]; type: CombinationType };
 }
 
+export interface RejoinRoomDto {
+  roomCode: string;
+  playerId: string;
+}
+
 export const GAME_CONSTANTS = {
   MIN_PLAYERS: 2,
   MAX_PLAYERS: 4,
