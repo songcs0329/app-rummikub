@@ -10,15 +10,17 @@ type PlayerCardProps = {
 
 function PlayerCard(props: PlayerCardProps) {
   const { player } = props;
+
   const customer = useCustomerStore((state) => state.customer);
-  const isCurrentUser = player.id === customer?.playerId;
+
+  const isPlayerUser = customer != null && player.id === customer.playerId;
 
   return (
     <Card className="py-4 rounded-lg">
       <CardHeader className="px-4">
         <CardTitle className="flex items-center gap-1 text-sm">
           {player.nickname}
-          {isCurrentUser && <Star className="size-4 text-yellow-400" fill="currentColor" />}
+          {isPlayerUser && <Star className="size-4 text-yellow-400" fill="currentColor" />}
         </CardTitle>
         <div className="flex items-center gap-1.5">
           {player.isHost && (
