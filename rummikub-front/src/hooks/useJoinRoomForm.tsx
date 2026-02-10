@@ -3,7 +3,7 @@ import { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { CustomerPlayer } from '@/types/rummikub-front.types';
+import type { JoinedRoomPayload } from '@/types/server.generated';
 import { useSocketStore } from '@/store/useSocketStore';
 import { useCustomerStore } from '@/store/useCustomerStore';
 
@@ -45,12 +45,7 @@ export function useJoinRoomForm(initialRoomCode?: string) {
     if (!socket) return;
 
     // 방 참여 성공 시: 플레이어 목록에서 본인 정보를 찾아 고객 상태 업데이트
-    const handleJoinedRoom = (data: {
-      roomCode: string;
-      players: CustomerPlayer[];
-      myPlayerId: string;
-      isHost: boolean;
-    }) => {
+    const handleJoinedRoom = (data: JoinedRoomPayload) => {
       const myPlayer = data.players.find((p) => p.id === data.myPlayerId);
       setCustomer({
         nickname: myPlayer?.nickname ?? '',

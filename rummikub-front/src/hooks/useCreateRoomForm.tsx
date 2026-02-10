@@ -3,7 +3,7 @@ import { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { CustomerPlayer } from '@/types/rummikub-front.types';
+import type { RoomCreatedPayload } from '@/types/server.generated';
 import { useSocketStore } from '@/store/useSocketStore';
 import { useCustomerStore } from '@/store/useCustomerStore';
 
@@ -40,7 +40,7 @@ export function useCreateRoomForm() {
     if (!socket) return;
 
     // 방 생성 성공 시: 서버로부터 roomCode, player 정보를 받아 고객 상태 업데이트
-    const handleRoomCreated = (data: { roomCode: string; player: CustomerPlayer }) => {
+    const handleRoomCreated = (data: RoomCreatedPayload) => {
       setCustomer({
         nickname: data.player.nickname,
         playerId: data.player.id,
