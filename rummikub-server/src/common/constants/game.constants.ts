@@ -1,0 +1,13 @@
+export const GAME_CONSTANTS = {
+  MIN_PLAYERS: 2,
+  MAX_PLAYERS: 4,
+  INITIAL_TILES_PER_PLAYER: 14,
+  MIN_INITIAL_MELD_VALUE: 30,
+  MIN_COMBINATION_SIZE: 3,
+  MAX_TILE_NUMBER: 13,
+  JOKER_COUNT: 2,
+  TILES_PER_SET: 2,
+  ROOM_CODE_LENGTH: 6,
+};
+
+export const TILE_COLORS = ['red', 'blue', 'yellow', 'black'] as const;
