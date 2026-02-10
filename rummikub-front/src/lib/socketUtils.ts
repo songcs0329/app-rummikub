@@ -14,6 +14,4 @@ export const getSocket = (): Socket => {
   return socket;
 };
 
-export const createSocket = getSocket;
-
 export type { Socket };
