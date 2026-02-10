@@ -98,6 +98,25 @@ export class RoomGateway
     }
   }
 
+  @SubscribeMessage('findRoom')
+  handleFindRoom(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { roomCode: string },
+  ) {
+    try {
+      const room = this.roomService.findRoom(data.roomCode);
+
+      client.emit('roomFound', {
+        roomCode: room.roomCode,
+        players: room.players.map((p) => p.toPublicInfo()),
+        gameStarted: room.gameStarted,
+        maxPlayers: room.maxPlayers,
+      });
+    } catch (error) {
+      client.emit('error', { message: error.message });
+    }
+  }
+
   @SubscribeMessage('playerReady')
   handlePlayerReady(
     @ConnectedSocket() client: Socket,
