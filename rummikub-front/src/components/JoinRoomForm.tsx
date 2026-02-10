@@ -18,7 +18,7 @@ function JoinRoomForm({ roomCode }: JoinRoomFormProps) {
         <CardDescription>방 코드를 입력하여 루미큐브 방에 참여하세요.</CardDescription>
       </CardHeader>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form className="flex flex-col gap-y-4" onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
             <InputFormField
               control={form.control}

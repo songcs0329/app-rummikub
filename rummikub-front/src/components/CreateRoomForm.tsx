@@ -14,7 +14,7 @@ function CreateRoomForm() {
         <CardDescription>새로운 루미큐브 방을 만들어보세요.</CardDescription>
       </CardHeader>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form className="flex flex-col gap-y-4" onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent>
             <InputFormField
               control={form.control}
