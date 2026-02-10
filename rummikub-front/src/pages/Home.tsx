@@ -1,18 +1,16 @@
-/**
- * TODO:
- * 루미큐브 방 생성 페이지
- * https://zod.dev/
- * https://react-hook-form.com/
- *
- */
-
-import { Button } from '@/components/ui/button';
+import { useSearchParams } from 'react-router';
+import { useSocket } from '@/hooks/useSocket';
+import CreateRoomForm from '@/components/CreateRoomForm';
+import JoinRoomForm from '@/components/JoinRoomForm';
 
 function Home() {
+  const [searchParams] = useSearchParams();
+  const roomCode = searchParams.get('roomCode');
+  useSocket();
+
   return (
-    <div>
-      <h1>home page</h1>
-      <Button>Click Me</Button>
+    <div className="flex min-h-screen items-center justify-center p-4">
+      {roomCode ? <JoinRoomForm roomCode={roomCode} /> : <CreateRoomForm />}
     </div>
   );
 }
