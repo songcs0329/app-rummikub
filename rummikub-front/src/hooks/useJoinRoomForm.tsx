@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { CustomerPlayer } from '@/types/rummikub-front.types';
@@ -14,14 +15,16 @@ const joinRoomSchema = z.object({
 type JoinRoomFormValues = z.infer<typeof joinRoomSchema>;
 
 export function useJoinRoomForm(initialRoomCode?: string) {
+  const navigate = useNavigate();
+
   const { socket } = useSocketStore();
-  const { setCustomer } = useCustomerStore();
+  const { customer, setCustomer } = useCustomerStore();
 
   const form = useForm<JoinRoomFormValues>({
     resolver: zodResolver(joinRoomSchema),
     defaultValues: {
-      roomCode: initialRoomCode ?? '',
-      nickname: '',
+      roomCode: initialRoomCode ?? customer?.roomCode ?? '',
+      nickname: customer?.nickname ?? '',
     },
   });
 
@@ -55,6 +58,8 @@ export function useJoinRoomForm(initialRoomCode?: string) {
         roomCode: data.roomCode,
         isHost: data.isHost,
       });
+
+      navigate(`/room/${data.roomCode}`);
     };
 
     // 에러 발생 시: 서버 에러 메시지를 폼의 root 에러로 설정하여 UI에 표시
@@ -70,7 +75,7 @@ export function useJoinRoomForm(initialRoomCode?: string) {
       socket.off('joinedRoom', handleJoinedRoom);
       socket.off('error', handleError);
     };
-  }, [socket, setCustomer, form]);
+  }, [socket, form, setCustomer, navigate]);
 
   return { form, onSubmit };
 }

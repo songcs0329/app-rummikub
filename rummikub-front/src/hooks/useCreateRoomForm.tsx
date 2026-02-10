@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { CustomerPlayer } from '@/types/rummikub-front.types';
@@ -13,6 +14,8 @@ const createRoomSchema = z.object({
 type CreateRoomFormValues = z.infer<typeof createRoomSchema>;
 
 export function useCreateRoomForm() {
+  const navigate = useNavigate();
+
   const { socket } = useSocketStore();
   const { setCustomer } = useCustomerStore();
 
@@ -44,6 +47,8 @@ export function useCreateRoomForm() {
         roomCode: data.roomCode,
         isHost: data.player.isHost,
       });
+
+      navigate(`/room/${data.roomCode}`);
     };
 
     // 에러 발생 시: 서버 에러 메시지를 폼의 root 에러로 설정하여 UI에 표시
@@ -59,7 +64,7 @@ export function useCreateRoomForm() {
       socket.off('roomCreated', handleRoomCreated);
       socket.off('error', handleError);
     };
-  }, [socket, form, setCustomer]);
+  }, [socket, form, setCustomer, navigate]);
 
   return { form, onSubmit };
 }
