@@ -1,0 +1,22 @@
+import PlayerCard from './PlayerCard';
+import type { PlayerPublicInfo } from '@/types/server.generated';
+
+type PlayersContainerProps = {
+  players: PlayerPublicInfo[];
+};
+
+function PlayersContainer(props: PlayersContainerProps) {
+  const { players } = props;
+
+  if (players.length === 0) return null;
+
+  return (
+    <div className="grid grid-cols-4 gap-4">
+      {players.map((player) => {
+        return <PlayerCard key={player.id} player={player} />;
+      })}
+    </div>
+  );
+}
+
+export default PlayersContainer;
