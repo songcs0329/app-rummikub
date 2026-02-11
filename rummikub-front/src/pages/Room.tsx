@@ -5,6 +5,7 @@ import { useCustomerStore } from '@/store/useCustomerStore';
 import PlayersContainer from '@/components/pages/room/PlayersContainer';
 import ShareRoom from '@/components/pages/room/ShareRoom';
 import PlayerActions from '@/components/pages/room/PlayerActions';
+import GameView from '@/components/pages/room/game/GameView';
 import { useGameStore } from '@/store/useGameStore';
 import { Button } from '@/components/ui/button';
 
@@ -45,7 +46,7 @@ function Room() {
 
     // 게임 시작 때 랜더링할 컴포넌트
     if (gameState) {
-      return <div>{JSON.stringify(gameState)}</div>;
+      return <GameView />;
     }
 
     // 게임 대기 때 랜더링할 컴포넌트

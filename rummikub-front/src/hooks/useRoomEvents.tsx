@@ -22,7 +22,9 @@ export function useRoomEvents(roomCode: string | undefined) {
   const updatePlayers = useRoomStore((state) => state.updatePlayers);
   const resetRoom = useRoomStore((state) => state.reset);
 
-  const setGameStarted = useGameStore((state) => state.setGameStarted);
+  const setGameState = useGameStore((state) => state.setGameState);
+  const setMyTiles = useGameStore((state) => state.setMyTiles);
+  const setIsMyTurn = useGameStore((state) => state.setIsMyTurn);
   const resetGame = useGameStore((state) => state.reset);
 
   useEffect(() => {
@@ -45,7 +47,9 @@ export function useRoomEvents(roomCode: string | undefined) {
     };
 
     const handleGameStarted = (data: GameStartedPayload) => {
-      setGameStarted(data);
+      setGameState(data.gameState);
+      setMyTiles(data.myTiles);
+      setIsMyTurn(data.isMyTurn);
     };
 
     /**
@@ -83,7 +87,19 @@ export function useRoomEvents(roomCode: string | undefined) {
       resetRoom();
       resetGame();
     };
-  }, [socket, isConnected, customer, roomCode, setRoom, updatePlayers, resetRoom, setGameStarted, resetGame]);
+  }, [
+    socket,
+    isConnected,
+    customer,
+    roomCode,
+    setRoom,
+    updatePlayers,
+    resetRoom,
+    setGameState,
+    setMyTiles,
+    setIsMyTurn,
+    resetGame,
+  ]);
 
   return {
     room,
