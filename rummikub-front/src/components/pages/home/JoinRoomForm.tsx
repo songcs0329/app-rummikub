@@ -12,13 +12,13 @@ function JoinRoomForm({ roomCode }: JoinRoomFormProps) {
   const { form, onSubmit } = useJoinRoomForm(roomCode);
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full h-full max-w-md border-0 shadow-none rounded-none">
       <CardHeader>
         <CardTitle>방 참여하기</CardTitle>
         <CardDescription>방 코드를 입력하여 루미큐브 방에 참여하세요.</CardDescription>
       </CardHeader>
       <Form {...form}>
-        <form className="flex flex-col gap-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+        <form className="flex-1 justify-between flex flex-col gap-y-4" onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
             <InputFormField
               control={form.control}
@@ -39,7 +39,7 @@ function JoinRoomForm({ roomCode }: JoinRoomFormProps) {
             )}
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full">
+            <Button type="submit" size="lg" className="w-full">
               방 참여하기
             </Button>
           </CardFooter>

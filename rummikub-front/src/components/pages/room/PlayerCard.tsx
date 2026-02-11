@@ -1,6 +1,6 @@
 import { Crown, Star, CircleCheck, CircleDashed } from 'lucide-react';
 import type { PlayerPublicInfo } from '@/types/server.generated';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useCustomerStore } from '@/store/useCustomerStore';
 
@@ -16,12 +16,14 @@ function PlayerCard(props: PlayerCardProps) {
   const isPlayerUser = customer != null && player.id === customer.playerId;
 
   return (
-    <Card className="py-4 rounded-lg">
-      <CardHeader className="px-4">
-        <CardTitle className="flex items-center gap-1 text-sm">
+    <Card className="rounded-lg py-4 gap-4">
+      <CardHeader className="gap-0">
+        <CardTitle className="flex items-center gap-1.5 text-sm">
           {player.nickname}
           {isPlayerUser && <Star className="size-4 text-yellow-400" fill="currentColor" />}
         </CardTitle>
+      </CardHeader>
+      <CardContent>
         <div className="flex items-center gap-1.5">
           {player.isHost && (
             <Badge className="bg-amber-100 text-amber-700">
@@ -41,12 +43,7 @@ function PlayerCard(props: PlayerCardProps) {
             </Badge>
           )}
         </div>
-      </CardHeader>
-      {player.tileCount > 0 && (
-        <CardContent>
-          <p className="text-sm text-muted-foreground">타일: {player.tileCount}개</p>
-        </CardContent>
-      )}
+      </CardContent>
     </Card>
   );
 }

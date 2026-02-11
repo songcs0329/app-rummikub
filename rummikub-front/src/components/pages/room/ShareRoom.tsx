@@ -25,14 +25,14 @@ export default function ShareRoom({ roomCode }: ShareRoomProps) {
   };
 
   return (
-    <Card className="rounded-lg">
-      <CardHeader>
-        <CardTitle>방 공유하기</CardTitle>
+    <Card className="rounded-lg border-0 shadow-none sm:border sm:shadow-sm py-4 gap-4">
+      <CardHeader className="gap-0">
+        <CardTitle className="text-sm">방 공유하기</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex items-center gap-2">
           <Input value={shareUrl} readOnly className="flex-1" />
-          <Button onClick={handleCopy} variant="outline">
+          <Button onClick={handleCopy} variant="outline" size="lg">
             {copied ? '복사됨' : '복사'}
           </Button>
         </div>

@@ -22,10 +22,13 @@ function Room() {
 
   // 게임 대기 때 랜더링할 컴포넌트
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <div className="flex w-full max-w-2xl flex-col gap-y-4">
-        <ShareRoom roomCode={roomCode!} />
-        <PlayersContainer players={room.players} />
+    <div className="h-full flex flex-1 flex-col justify-between">
+      {/** 플레이어 목록 */}
+      <PlayersContainer players={room.players} />
+      {/** 액션버튼 */}
+      <div className="bg-red-500 flex flex-col gap-4">
+        {customer.isHost && <ShareRoom roomCode={roomCode!} />}
+        <div className="bg-white">유저 동작</div>
       </div>
     </div>
   );

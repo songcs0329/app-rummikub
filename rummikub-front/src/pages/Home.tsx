@@ -6,11 +6,7 @@ function Home() {
   const [searchParams] = useSearchParams();
   const roomCode = searchParams.get('roomCode');
 
-  return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      {roomCode ? <JoinRoomForm roomCode={roomCode} /> : <CreateRoomForm />}
-    </div>
-  );
+  return <div className="h-full">{roomCode ? <JoinRoomForm roomCode={roomCode} /> : <CreateRoomForm />}</div>;
 }
 
 export default Home;
