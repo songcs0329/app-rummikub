@@ -5,15 +5,20 @@ import { useCustomerStore } from '@/store/useCustomerStore';
 import { useSocketStore } from '@/store/useSocketStore';
 import { useRoomStore } from '@/store/useRoomStore';
 import { GAME_CONSTANTS } from '@/types/server.generated';
+import { useGameStore } from '@/store/useGameStore';
 
 function PlayerActions() {
   const navigate = useNavigate();
 
+  const socket = useSocketStore((state) => state.socket);
+
   const customer = useCustomerStore((state) => state.customer);
   const resetCustomer = useCustomerStore((state) => state.reset);
 
-  const socket = useSocketStore((state) => state.socket);
   const room = useRoomStore((state) => state.room);
+  const resetRoom = useRoomStore((state) => state.reset);
+
+  const resetGame = useGameStore((state) => state.reset);
 
   if (!customer || !room) return null;
 
@@ -24,6 +29,8 @@ function PlayerActions() {
     if (!socket) return;
     socket.emit('leaveRoom', { roomCode: customer.roomCode });
     resetCustomer();
+    resetRoom();
+    resetGame();
     navigate('/');
   };
 
