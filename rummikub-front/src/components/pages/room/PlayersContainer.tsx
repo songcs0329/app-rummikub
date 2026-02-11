@@ -11,7 +11,7 @@ function PlayersContainer(props: PlayersContainerProps) {
   if (players.length === 0) return null;
 
   return (
-    <div className="flex flex-col gap-4 py-4">
+    <div className="flex flex-col gap-4">
       {players.map((player) => {
         return <PlayerCard key={player.id} player={player} />;
       })}
