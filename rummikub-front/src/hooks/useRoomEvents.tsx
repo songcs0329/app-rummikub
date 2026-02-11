@@ -4,10 +4,12 @@ import type {
   PlayerJoinedPayload,
   PlayerLeftPayload,
   PlayerStatusChangedPayload,
+  GameStartedPayload,
 } from '@/types/server.generated';
 import { useSocketStore } from '@/store/useSocketStore';
 import { useRoomStore } from '@/store/useRoomStore';
 import { useCustomerStore } from '@/store/useCustomerStore';
+import { useGameStore } from '@/store/useGameStore';
 
 export function useRoomEvents(roomCode: string | undefined) {
   const socket = useSocketStore((state) => state.socket);
@@ -18,7 +20,10 @@ export function useRoomEvents(roomCode: string | undefined) {
   const room = useRoomStore((state) => state.room);
   const setRoom = useRoomStore((state) => state.setRoom);
   const updatePlayers = useRoomStore((state) => state.updatePlayers);
-  const reset = useRoomStore((state) => state.reset);
+  const resetRoom = useRoomStore((state) => state.reset);
+
+  const setGameStarted = useGameStore((state) => state.setGameStarted);
+  const resetGame = useGameStore((state) => state.reset);
 
   useEffect(() => {
     if (!socket || !isConnected || !roomCode) return;
@@ -39,6 +44,10 @@ export function useRoomEvents(roomCode: string | undefined) {
       updatePlayers(data.players);
     };
 
+    const handleGameStarted = (data: GameStartedPayload) => {
+      setGameStarted(data);
+    };
+
     /**
      * findRoom: 초기 방 정보 설정,
      * rejoinRoom: 기존 세션을 복구한다.
@@ -50,6 +59,8 @@ export function useRoomEvents(roomCode: string | undefined) {
     socket.on('playerLeft', handlePlayerLeft);
     // 레디 상태 변경 시 players 갱신
     socket.on('playerStatusChanged', handlePlayerStatusChanged);
+    // 게임 시작 시 게임 상태 설정
+    socket.on('gameStarted', handleGameStarted);
 
     /**
      * 새로고침 시 플레이어가 방에서 제거되는 문제 해결.
@@ -68,9 +79,11 @@ export function useRoomEvents(roomCode: string | undefined) {
       socket.off('playerJoined', handlePlayerJoined);
       socket.off('playerLeft', handlePlayerLeft);
       socket.off('playerStatusChanged', handlePlayerStatusChanged);
-      reset();
+      socket.off('gameStarted', handleGameStarted);
+      resetRoom();
+      resetGame();
     };
-  }, [socket, isConnected, customer, roomCode, setRoom, updatePlayers, reset]);
+  }, [socket, isConnected, customer, roomCode, setRoom, updatePlayers, resetRoom, setGameStarted, resetGame]);
 
   return {
     room,
