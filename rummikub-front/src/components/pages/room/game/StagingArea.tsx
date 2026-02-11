@@ -20,9 +20,11 @@ function StagingArea() {
         </button>
       </div>
       <div className="flex gap-0.5">
-        {selectedTiles.map((tile) => (
-          <TileComponent key={tile.id} tile={tile} size="sm" />
-        ))}
+        {selectedTiles
+          .sort((a, b) => a.number - b.number)
+          .map((tile) => (
+            <TileComponent key={tile.id} tile={tile} size="sm" />
+          ))}
       </div>
     </div>
   );

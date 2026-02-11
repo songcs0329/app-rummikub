@@ -106,9 +106,12 @@ function GameView() {
         <GameHeader />
         <PlayerInfoBar />
         <GameBoard />
-        <StagingArea />
-        <TileRack />
-        <GameActions />
+
+        <div className="sticky bottom-0 flex flex-col gap-4">
+          <TileRack />
+          <StagingArea />
+          <GameActions />
+        </div>
       </div>
       <DragOverlay>{activeTile ? <TileComponent tile={activeTile} isDragging /> : null}</DragOverlay>
     </DndContext>

@@ -15,13 +15,17 @@ function GameBoard() {
         </div>
       ) : (
         <div className="flex flex-wrap gap-4">
-          {gameState.board.map((combination) => (
-            <div key={combination.id} className="flex gap-0.5 rounded-md bg-white/80 p-1.5 shadow-sm">
-              {combination.tiles.map((tile) => (
-                <TileComponent key={tile.id} tile={tile} size="sm" />
-              ))}
-            </div>
-          ))}
+          {gameState.board.map((combination, index) => {
+            return (
+              <div key={index} className="flex gap-0.5 rounded-md bg-white/80 p-1.5 shadow-sm">
+                {combination.tiles
+                  .sort((a, b) => a.number - b.number)
+                  .map((tile) => {
+                    return <TileComponent key={tile.id} tile={tile} size="sm" />;
+                  })}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

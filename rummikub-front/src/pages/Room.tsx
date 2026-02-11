@@ -63,7 +63,7 @@ function Room() {
     );
   }, [customer, room, gameState, roomCode, handleJoinRoom, handleGoHome]);
 
-  return <div className="h-full flex flex-1 flex-col justify-between p-4">{renderRoomContents}</div>;
+  return <div className="h-full flex flex-1 flex-col justify-between p-4 overflow-auto">{renderRoomContents}</div>;
 }
 
 export default Room;
