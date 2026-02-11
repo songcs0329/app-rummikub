@@ -148,6 +148,19 @@ export class RoomGateway
         gameStarted: room.gameStarted,
         maxPlayers: room.maxPlayers,
       });
+
+      // 게임이 진행 중이면 게임 상태도 전송
+      if (room.gameStarted) {
+        const player = room.players.find((p) => p.id === data.playerId);
+        if (player) {
+          const gameState = GameState.fromRoom(room);
+          client.emit('gameStarted', {
+            gameState,
+            myTiles: player.tiles,
+            isMyTurn: room.currentPlayer?.id === player.id,
+          });
+        }
+      }
     } catch (error) {
       client.emit('error', { message: error.message });
     }
