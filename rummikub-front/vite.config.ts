@@ -8,7 +8,21 @@ export default ({ mode }: { mode: string }) => {
   const env = loadEnv(mode, process.cwd(), '');
 
   return defineConfig({
-    plugins: [react(), tailwindcss()],
+    plugins: [
+      react({
+        babel: {
+          plugins: [
+            [
+              '@locator/babel-jsx/dist',
+              {
+                env: 'development',
+              },
+            ],
+          ],
+        },
+      }),
+      tailwindcss(),
+    ],
     server: {
       proxy: {
         '/api': {
