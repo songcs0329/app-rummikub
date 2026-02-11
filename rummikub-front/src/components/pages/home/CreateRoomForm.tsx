@@ -8,13 +8,13 @@ function CreateRoomForm() {
   const { form, onSubmit } = useCreateRoomForm();
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full h-full max-w-md border-0 shadow-none rounded-none">
       <CardHeader>
         <CardTitle>방 만들기</CardTitle>
         <CardDescription>새로운 루미큐브 방을 만들어보세요.</CardDescription>
       </CardHeader>
       <Form {...form}>
-        <form className="flex flex-col gap-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+        <form className="flex-1 justify-between flex flex-col gap-y-4" onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent>
             <InputFormField
               control={form.control}
@@ -28,7 +28,7 @@ function CreateRoomForm() {
             )}
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full">
+            <Button type="submit" size="lg" className="w-full">
               방 만들기
             </Button>
           </CardFooter>
