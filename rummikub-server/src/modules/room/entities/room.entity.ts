@@ -13,6 +13,8 @@ export class Room {
   deck: Tile[];
   gameOver: boolean;
   winner: Player | null;
+  consecutivePasses: number;
+  placedThisTurn: boolean;
 
   constructor(roomCode: string) {
     this.roomCode = roomCode;
@@ -25,6 +27,8 @@ export class Room {
     this.deck = [];
     this.gameOver = false;
     this.winner = null;
+    this.consecutivePasses = 0;
+    this.placedThisTurn = false;
   }
 
   get host(): Player | null {
@@ -39,6 +43,7 @@ export class Room {
   nextTurn() {
     this.currentTurnIndex =
       (this.currentTurnIndex + 1) % this.players.length;
+    this.placedThisTurn = false;
   }
 
   canStart(): boolean {

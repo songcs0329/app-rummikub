@@ -79,7 +79,7 @@ function GameView() {
         </div>
         <div className="flex flex-col gap-3">
           {gameState.players
-            .sort((a, b) => b.score - a.score)
+            .sort((a, b) => a.score - b.score)
             .map((player, index) => (
               <div key={player.id} className="flex items-center gap-3 text-sm">
                 <span className="w-6 text-center font-bold text-zinc-400">{index + 1}</span>
@@ -103,13 +103,16 @@ function GameView() {
       onDragEnd={handleDragEnd}
     >
       <div className="flex flex-1 flex-col gap-3">
-        <GameHeader />
-        <PlayerInfoBar />
+        <div className="sticky top-0 flex flex-col gap-4">
+          <GameHeader />
+          <PlayerInfoBar />
+        </div>
+
         <GameBoard />
 
         <div className="sticky bottom-0 flex flex-col gap-4">
-          <TileRack />
           <StagingArea />
+          <TileRack />
           <GameActions />
         </div>
       </div>

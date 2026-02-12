@@ -60,10 +60,10 @@ function GameActions() {
           variant="outline"
           className="flex-1"
           onClick={handleDrawTile}
-          disabled={!isMyTurn || isGameOver}
+          disabled={!isMyTurn || isGameOver || gameState.deckCount === 0}
         >
           <Plus className="size-4" />
-          타일 뽑기
+          타일 뽑기{gameState.deckCount === 0 ? ' (더미 소진)' : ''}
         </Button>
         <Button size="lg" className="flex-1" onClick={handleEndTurn} disabled={!isMyTurn || isGameOver}>
           <SkipForward className="size-4" />턴 종료

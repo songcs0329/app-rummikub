@@ -115,6 +115,8 @@ export class RoomService {
 
     room.gameStarted = true;
     room.currentTurnIndex = 0;
+    room.consecutivePasses = 0;
+    room.placedThisTurn = false;
 
     return room;
   }
@@ -151,12 +153,35 @@ export class RoomService {
       throw new BadRequestException('당신의 턴이 아닙니다.');
     }
 
+    // 조건 ①: 손패를 모두 낸 플레이어가 승리
     if (player!.tiles.length === 0) {
       room.gameOver = true;
       room.winner = player ?? null;
       room.players.forEach((p) => {
         p.score = this.gameService.calculatePlayerScore(p.tiles);
       });
+      return room;
+    }
+
+    // 연속 패스 추적 (조합을 놓지 않은 턴 = 패스)
+    if (room.placedThisTurn) {
+      room.consecutivePasses = 0;
+    } else {
+      room.consecutivePasses++;
+    }
+
+    // 조건 ②: 더미 소진 + 전원 연속 패스 → 남은 타일 합계가 가장 낮은 플레이어 승리
+    if (
+      room.deck.length === 0 &&
+      room.consecutivePasses >= room.players.length
+    ) {
+      room.gameOver = true;
+      room.players.forEach((p) => {
+        p.score = this.gameService.calculatePlayerScore(p.tiles);
+      });
+      room.winner = room.players.reduce((min, p) =>
+        p.score < min.score ? p : min,
+      );
     } else {
       room.nextTurn();
     }
@@ -243,6 +268,7 @@ export class RoomService {
     }
 
     room.board.push(combinationData);
+    room.placedThisTurn = true;
 
     combinationData.tiles.forEach((tile: any) => {
       const index = player.tiles.findIndex((t) => t.id === tile.id);
