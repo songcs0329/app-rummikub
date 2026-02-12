@@ -33,7 +33,7 @@ function Room() {
   const renderRoomContents = useMemo(() => {
     if (!customer || !room) {
       return (
-        <div className="flex flex-col gap-4 p-4">
+        <div className="flex flex-col gap-4 p-4 h-full justify-center">
           <Button variant="default" size="lg" className="w-full" onClick={handleJoinRoom}>
             방 참여하기
           </Button>
