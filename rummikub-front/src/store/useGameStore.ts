@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { arrayMove } from '@dnd-kit/sortable';
 import type { GameState, Tile, GameOverPayload } from '@/types/server.generated';
-import { autoSortTiles, type SortResult } from '@/utils/tileUtils';
+import { autoSortTiles, type SortResult } from '@/lib/tileUtils';
 
 export interface GameStoreState {
   gameState: GameState | null;

@@ -3,7 +3,7 @@ import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 import { ArrowUpDown } from 'lucide-react';
 import SortableTile from './SortableTile';
 import { useGameStore } from '@/store/useGameStore';
-import { calculateScore } from '@/utils/tileUtils';
+import { calculateScore } from '@/lib/tileUtils';
 
 /** 내 타일 영역. 보유 타일 표시 및 선택/정렬 지원 */
 function TileRack() {
