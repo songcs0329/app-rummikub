@@ -7,6 +7,7 @@ React 19 기반 실시간 멀티플레이어 루미큐브 보드게임 클라이
 루미큐브는 타일 기반 전략 게임으로, 2~4명의 플레이어가 타일을 조합하여 런(연속 숫자)이나 그룹(같은 숫자)을 만드는 게임입니다.
 
 **이 프론트엔드의 핵심 책임:**
+
 - Socket.io를 통한 실시간 서버 통신
 - Zustand 스토어로 게임 상태 관리 (플레이어, 방, 게임 상태)
 - React Hook Form + Zod를 사용한 폼 검증
@@ -15,24 +16,24 @@ React 19 기반 실시간 멀티플레이어 루미큐브 보드게임 클라이
 
 ## 기술 스택
 
-| 분류 | 라이브러리 | 버전 | 목적 |
-|------|----------|------|------|
-| **프레임워크** | React | 19.1.0 | UI 렌더링 |
-| **빌드 도구** | Vite | 7.0.4 | 번들링 및 개발 서버 |
-| **언어** | TypeScript | ~5.8.3 | 타입 안정성 |
-| **상태 관리** | Zustand | 5.0.7 | 전역 상태 (persist 미들웨어 적용) |
-| **폼 검증** | React Hook Form | 7.71.1 | 폼 관리 및 유효성 검사 |
-| | Zod | 4.3.6 | 스키마 기반 검증 |
-| **API 통신** | socket.io-client | 4.8.3 | WebSocket 실시간 통신 |
-| **라우팅** | React Router | 7.12.0 | 페이지 네비게이션 |
-| **UI 컴포넌트** | shadcn/ui | - | 스타일된 컴포넌트 (New York 스타일) |
-| **드래그 앤 드롭** | @dnd-kit/core | 6.3.1 | 타일 정렬 UI |
-| | @dnd-kit/sortable | 10.0.0 | 정렬 가능 기능 |
-| **스타일링** | Tailwind CSS | 4.1.18 | 유틸리티 기반 CSS |
-| **HTTP 클라이언트** | Axios | 1.13.2 | REST 요청 (선택적) |
-| **쿼리 관리** | TanStack React Query | 5.90.19 | 서버 상태 캐싱 |
-| **애니메이션** | Motion | 12.34.0 | UI 애니메이션 |
-| **바텀 시트** | react-modal-sheet | 5.2.1 | 게임 하단 영역 UI |
+| 분류                | 라이브러리           | 버전    | 목적                                |
+| ------------------- | -------------------- | ------- | ----------------------------------- |
+| **프레임워크**      | React                | 19.1.0  | UI 렌더링                           |
+| **빌드 도구**       | Vite                 | 7.0.4   | 번들링 및 개발 서버                 |
+| **언어**            | TypeScript           | ~5.8.3  | 타입 안정성                         |
+| **상태 관리**       | Zustand              | 5.0.7   | 전역 상태 (persist 미들웨어 적용)   |
+| **폼 검증**         | React Hook Form      | 7.71.1  | 폼 관리 및 유효성 검사              |
+|                     | Zod                  | 4.3.6   | 스키마 기반 검증                    |
+| **API 통신**        | socket.io-client     | 4.8.3   | WebSocket 실시간 통신               |
+| **라우팅**          | React Router         | 7.12.0  | 페이지 네비게이션                   |
+| **UI 컴포넌트**     | shadcn/ui            | -       | 스타일된 컴포넌트 (New York 스타일) |
+| **드래그 앤 드롭**  | @dnd-kit/core        | 6.3.1   | 타일 정렬 UI                        |
+|                     | @dnd-kit/sortable    | 10.0.0  | 정렬 가능 기능                      |
+| **스타일링**        | Tailwind CSS         | 4.1.18  | 유틸리티 기반 CSS                   |
+| **HTTP 클라이언트** | Axios                | 1.13.2  | REST 요청 (선택적)                  |
+| **쿼리 관리**       | TanStack React Query | 5.90.19 | 서버 상태 캐싱                      |
+| **애니메이션**      | Motion               | 12.34.0 | UI 애니메이션                       |
+| **바텀 시트**       | react-modal-sheet    | 5.2.1   | 게임 하단 영역 UI                   |
 
 ## 시작하기
 
@@ -97,13 +98,13 @@ npm run preview
 
 ## npm 스크립트
 
-| 스크립트 | 명령어 | 설명 |
-|---------|--------|------|
-| `dev` | `vite` | 개발 서버 시작 (hot reload 지원) |
-| `build` | `tsc -b && vite build` | TypeScript 컴파일 후 프로덕션 빌드 |
-| `lint` | `eslint .` | ESLint로 코드 스타일 검사 |
-| `preview` | `vite preview` | 프로덕션 빌드 미리보기 |
-| `generate:types` | `node scripts/generate-types.mjs` | 서버 타입 정의 자동 생성 |
+| 스크립트         | 명령어                            | 설명                               |
+| ---------------- | --------------------------------- | ---------------------------------- |
+| `dev`            | `vite`                            | 개발 서버 시작 (hot reload 지원)   |
+| `build`          | `tsc -b && vite build`            | TypeScript 컴파일 후 프로덕션 빌드 |
+| `lint`           | `eslint .`                        | ESLint로 코드 스타일 검사          |
+| `preview`        | `vite preview`                    | 프로덕션 빌드 미리보기             |
+| `generate:types` | `node scripts/generate-types.mjs` | 서버 타입 정의 자동 생성           |
 
 ## 디렉토리 구조
 
@@ -204,6 +205,7 @@ const setCustomer = useCustomerStore((state) => state.setCustomer);
 ```
 
 **주요 스토어:**
+
 - `useCustomerStore`: 플레이어 세션 정보 (persist 적용, localStorage에 저장)
 - `useSocketStore`: Socket.io 인스턴스 및 연결 상태
 - `useRoomStore`: 방 정보 및 플레이어 목록
@@ -218,10 +220,7 @@ const setCustomer = useCustomerStore((state) => state.setCustomer);
 ```typescript
 // 방 생성 폼
 const createRoomSchema = z.object({
-  nickname: z
-    .string()
-    .min(2, '닉네임은 최소 2자 이상이어야 합니다.')
-    .max(20, '닉네임은 최대 20자까지 가능합니다.'),
+  nickname: z.string().min(2, '닉네임은 최소 2자 이상이어야 합니다.').max(20, '닉네임은 최대 20자까지 가능합니다.'),
 });
 
 type CreateRoomFormValues = z.infer<typeof createRoomSchema>;
@@ -374,7 +373,7 @@ let socket: Socket | null = null;
 export const getSocket = (): Socket => {
   if (!socket) {
     socket = io(SOCKET_URL, {
-      autoConnect: false,        // 명시적 connect() 호출 대기
+      autoConnect: false, // 명시적 connect() 호출 대기
       transports: ['websocket'], // WebSocket만 사용
     });
   }
@@ -383,6 +382,7 @@ export const getSocket = (): Socket => {
 ```
 
 **핵심 설정:**
+
 - `autoConnect: false` - 컴포넌트가 이벤트 리스너를 등록한 후 connect() 호출
 - `transports: ['websocket']` - HTTP 롱폴링 폴백 제거로 빠른 연결 및 실시간 성능 확보
 
@@ -426,15 +426,15 @@ npx shadcn@latest add <컴포넌트명>
 
 ### 자주 사용되는 컴포넌트
 
-| 컴포넌트 | 설명 | 추가 명령어 |
-|---------|------|------------|
-| Button | 클릭 가능한 버튼 | `npx shadcn@latest add button` |
-| Input | 텍스트 입력 필드 | `npx shadcn@latest add input` |
-| Card | 카드 컨테이너 | `npx shadcn@latest add card` |
-| Form | React Hook Form 통합 | `npx shadcn@latest add form` |
-| Label | 폼 라벨 | `npx shadcn@latest add label` |
-| Badge | 상태 표시 배지 | `npx shadcn@latest add badge` |
-| Dialog | 모달 다이얼로그 | `npx shadcn@latest add dialog` |
+| 컴포넌트 | 설명                 | 추가 명령어                    |
+| -------- | -------------------- | ------------------------------ |
+| Button   | 클릭 가능한 버튼     | `npx shadcn@latest add button` |
+| Input    | 텍스트 입력 필드     | `npx shadcn@latest add input`  |
+| Card     | 카드 컨테이너        | `npx shadcn@latest add card`   |
+| Form     | React Hook Form 통합 | `npx shadcn@latest add form`   |
+| Label    | 폼 라벨              | `npx shadcn@latest add label`  |
+| Badge    | 상태 표시 배지       | `npx shadcn@latest add badge`  |
+| Dialog   | 모달 다이얼로그      | `npx shadcn@latest add dialog` |
 
 ### 컴포넌트 경로
 
@@ -488,9 +488,9 @@ const routes: RouteObject[] = [
   {
     Component: Layout,
     children: [
-      { index: true, Component: Home },        // /
+      { index: true, Component: Home }, // /
       { path: '/room/:roomCode', Component: Room }, // /room/:roomCode
-      { path: '*', Component: NotFound },      // 404
+      { path: '*', Component: NotFound }, // 404
     ],
   },
 ];
@@ -498,11 +498,11 @@ const routes: RouteObject[] = [
 
 ### 페이지 구성
 
-| 경로 | 컴포넌트 | 설명 |
-|------|---------|------|
-| `/` | `Home` | 홈페이지 (방 생성/참여) |
-| `/room/:roomCode` | `Room` | 게임 플레이 페이지 |
-| `*` | `NotFound` | 404 에러 페이지 |
+| 경로              | 컴포넌트   | 설명                    |
+| ----------------- | ---------- | ----------------------- |
+| `/`               | `Home`     | 홈페이지 (방 생성/참여) |
+| `/room/:roomCode` | `Room`     | 게임 플레이 페이지      |
+| `*`               | `NotFound` | 404 에러 페이지         |
 
 ### 네비게이션
 
@@ -527,77 +527,32 @@ function MyComponent() {
 
 ### 클라이언트 → 서버 이벤트
 
-| 이벤트 | 페이로드 | 설명 |
-|--------|---------|------|
-| `createRoom` | `{ nickname: string }` | 방 생성 요청 |
-| `joinRoom` | `{ roomCode: string; nickname: string }` | 방 참여 요청 |
-| `findRoom` | `{ roomCode: string }` | 방 정보 조회 |
-| `rejoinRoom` | `{ roomCode: string; playerId: string }` | 재접속 |
-| `playerReady` | `{ roomCode: string }` | 플레이어 준비 완료 |
-| `startGame` | `{ roomCode: string }` | 게임 시작 (호스트만) |
-| `drawTile` | `{ roomCode: string }` | 덱에서 타일 드로우 |
-| `placeCombination` | `{ roomCode: string; combination: any }` | 조합 배치 |
-| `endTurn` | `{ roomCode: string }` | 턴 종료 |
-| `leaveRoom` | `{ roomCode: string }` | 방 나가기 |
+| 이벤트             | 페이로드                                 | 설명                 |
+| ------------------ | ---------------------------------------- | -------------------- |
+| `createRoom`       | `{ nickname: string }`                   | 방 생성 요청         |
+| `joinRoom`         | `{ roomCode: string; nickname: string }` | 방 참여 요청         |
+| `findRoom`         | `{ roomCode: string }`                   | 방 정보 조회         |
+| `rejoinRoom`       | `{ roomCode: string; playerId: string }` | 재접속               |
+| `playerReady`      | `{ roomCode: string }`                   | 플레이어 준비 완료   |
+| `startGame`        | `{ roomCode: string }`                   | 게임 시작 (호스트만) |
+| `drawTile`         | `{ roomCode: string }`                   | 덱에서 타일 드로우   |
+| `placeCombination` | `{ roomCode: string; combination: any }` | 조합 배치            |
+| `endTurn`          | `{ roomCode: string }`                   | 턴 종료              |
+| `leaveRoom`        | `{ roomCode: string }`                   | 방 나가기            |
 
 ### 서버 → 클라이언트 이벤트
 
-| 이벤트 | 페이로드 | 설명 |
-|--------|---------|------|
-| `roomCreated` | `{ roomCode: string; player: Player }` | 방 생성 성공 |
-| `joinedRoom` | `{ roomCode: string; players: Player[] }` | 방 참여 성공 |
-| `playerJoined` | `{ player: Player }` | 다른 플레이어 입장 |
-| `gameStarted` | `{ gameState: GameState }` | 게임 시작 |
-| `yourTurn` | - | 현재 플레이어의 턴 |
-| `tileDrawn` | `{ tile: Tile }` | 타일 드로우 성공 |
-| `boardUpdated` | `{ gameState: GameState }` | 보드 상태 변경 |
-| `gameOver` | `{ winner: Player; gameState: GameState }` | 게임 종료 |
-| `error` | `{ message: string }` | 에러 발생 |
-
-## 코드 스타일
-
-프로젝트는 다음 코드 스타일 가이드를 따릅니다.
-
-### Prettier 설정
-
-- **따옴표:** 작은따옴표 (`'`)
-- **세미콜론:** 자동 추가
-- **들여쓰기:** 2칸 스페이스
-- **줄 너비:** 120자
-- **후행 쉼표:** 자동 추가
-
-### ESLint 규칙
-
-- TypeScript + React Hooks 규칙 적용
-- Prettier 통합 (코드 스타일)
-- `@typescript-eslint/no-explicit-any` 비활성화 (any 타입 허용)
-
-### 코드 리뷰
-
-```bash
-npm run lint  # ESLint 검사 실행
-```
-
-### 문자열 언어
-
-- **사용자 노출 문자열:** 한국어
-- **코드 식별자 (함수명, 변수명 등):** 영어
-- **주석:** 한국어
-
-**예:**
-
-```typescript
-// 한국어 주석
-const handleCreateRoom = (nickname: string) => {
-  console.log('방을 생성했습니다'); // 한국어 메시지
-  socket.emit('createRoom', { nickname });
-};
-
-// UI 텍스트
-<Button>게임 시작</Button>
-<Label>닉네임</Label>
-<Input placeholder="닉네임 입력" />
-```
+| 이벤트         | 페이로드                                   | 설명               |
+| -------------- | ------------------------------------------ | ------------------ |
+| `roomCreated`  | `{ roomCode: string; player: Player }`     | 방 생성 성공       |
+| `joinedRoom`   | `{ roomCode: string; players: Player[] }`  | 방 참여 성공       |
+| `playerJoined` | `{ player: Player }`                       | 다른 플레이어 입장 |
+| `gameStarted`  | `{ gameState: GameState }`                 | 게임 시작          |
+| `yourTurn`     | -                                          | 현재 플레이어의 턴 |
+| `tileDrawn`    | `{ tile: Tile }`                           | 타일 드로우 성공   |
+| `boardUpdated` | `{ gameState: GameState }`                 | 보드 상태 변경     |
+| `gameOver`     | `{ winner: Player; gameState: GameState }` | 게임 종료          |
+| `error`        | `{ message: string }`                      | 에러 발생          |
 
 ## 개발 팁
 
@@ -618,23 +573,6 @@ npm run generate:types
 ```
 
 생성된 타입은 `src/types/server.generated.ts`에 저장됩니다.
-
-### 디버깅
-
-개발 중에는 브라우저의 개발자 도구와 콘솔을 활용합니다:
-
-```typescript
-console.log('변수 값:', variable);
-console.table(dataArray); // 배열/객체를 테이블로 표시
-```
-
-Socket.io 이벤트 로깅:
-
-```typescript
-socket.onAny((eventName, ...args) => {
-  console.log(`Socket 이벤트: ${eventName}`, args);
-});
-```
 
 ## 환경별 빌드
 
@@ -686,7 +624,3 @@ npm run dev -- --port 5174
 - [React Router 공식 문서](https://reactrouter.com)
 - [Tailwind CSS 공식 문서](https://tailwindcss.com)
 - [@dnd-kit 공식 문서](https://docs.dnd-kit.com)
-
-## 라이선스
-
-이 프로젝트의 라이선스는 프로젝트의 루트 `LICENSE` 파일을 참고합니다.

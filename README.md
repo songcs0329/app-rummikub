@@ -119,21 +119,21 @@ NODE_ENV=development
 
 ### 프론트엔드 (`rummikub-front/`)
 
-| 명령어 | 설명 |
-|--------|------|
-| `npm run dev` | Vite 개발 서버 시작 (http://localhost:5173) |
-| `npm run build` | TypeScript 컴파일 후 프로덕션 빌드 |
-| `npm run lint` | ESLint로 코드 검사 |
-| `npm run preview` | 프로덕션 빌드 미리보기 |
-| `npm run generate:types` | 타입 정의 자동 생성 |
+| 명령어                   | 설명                                        |
+| ------------------------ | ------------------------------------------- |
+| `npm run dev`            | Vite 개발 서버 시작 (http://localhost:5173) |
+| `npm run build`          | TypeScript 컴파일 후 프로덕션 빌드          |
+| `npm run lint`           | ESLint로 코드 검사                          |
+| `npm run preview`        | 프로덕션 빌드 미리보기                      |
+| `npm run generate:types` | 타입 정의 자동 생성                         |
 
 ### 백엔드 (`rummikub-server/`)
 
-| 명령어 | 설명 |
-|--------|------|
-| `npm run start:dev` | NestJS watch 모드 실행 |
-| `npm run build` | TypeScript 컴파일 및 NestJS 빌드 |
-| `npm run start:prod` | 프로덕션 모드 실행 |
+| 명령어               | 설명                             |
+| -------------------- | -------------------------------- |
+| `npm run start:dev`  | NestJS watch 모드 실행           |
+| `npm run build`      | TypeScript 컴파일 및 NestJS 빌드 |
+| `npm run start:prod` | 프로덕션 모드 실행               |
 
 ## 게임 규칙
 
@@ -162,6 +162,7 @@ NODE_ENV=development
 조합은 다음 두 가지 형태만 가능합니다:
 
 1. **런(Run):** 같은 색 연속 숫자 (예: 빨강 5, 6, 7, 8)
+
    - 최소 3개 타일 필수
 
 2. **그룹(Group):** 같은 숫자 다른 색 (예: 검정 7, 파랑 7, 노랑 7)
@@ -177,78 +178,3 @@ NODE_ENV=development
 ### 승리 조건
 
 첫 멜드 후 모든 타일을 먼저 내려놓는 플레이어가 승리합니다.
-
-## 개발 가이드
-
-### 코드 스타일
-
-- **Prettier:** 작은따옴표, 세미콜론, 2칸 들여쓰기, 120자 줄 너비, 후행 쉼표
-- **ESLint:** TypeScript + React Hooks + Prettier 통합
-- **주석 및 문자열:** 한국어
-- **코드 식별자:** 영어
-
-### shadcn/ui 컴포넌트 추가
-
-```bash
-cd rummikub-front
-npx shadcn@latest add <component-name>
-```
-
-### 폼 구현 패턴
-
-프론트엔드는 React Hook Form + Zod를 사용합니다:
-
-1. Zod 스키마로 검증 규칙 정의
-2. `useForm`에 `zodResolver` 연결
-3. shadcn의 `Form` / `FormField` 컴포넌트 사용
-
-### Socket.io 이벤트 처리
-
-백엔드는 WebSocket 게이트웨이에서 모든 클라이언트-서버 통신을 처리합니다.
-REST 엔드포인트는 없으며, 모든 데이터 교환이 Socket.io 이벤트를 통합니다.
-
-## 프로젝트 구조 (상세)
-
-### 프론트엔드
-
-- `src/components/` — React 컴포넌트 (UI 컴포넌트는 `src/components/ui/`)
-- `src/hooks/` — 커스텀 훅 (소켓 이벤트, 폼 로직 캡슐화)
-- `src/pages/` — 페이지 컴포넌트
-- `src/store/` — Zustand 상태 관리 (persist 미들웨어)
-- `src/types/` — TypeScript 타입 정의
-
-### 백엔드
-
-- `src/modules/room/` — 방 관리 모듈 (gateway, service, dto, entities)
-- `src/modules/game/` — 게임 로직 모듈 (service, entities)
-- `src/common/constants/` — 게임 규칙 상수 (`game.constants.ts`)
-
-## 아키텍처 특징
-
-### 프론트엔드
-
-- **경로 별칭:** `@/*` → `./src/*`
-- **상태 관리:** Zustand (플레이어 세션, 소켓 인스턴스 persist)
-- **라우팅:** React Router 7 (Home `/`, Room `/room/:roomCode`)
-- **드래그 드롭:** @dnd-kit로 타일 이동
-
-### 백엔드
-
-- **WebSocket만 사용:** REST 엔드포인트 없음
-- **인메모리 저장소:** 3개 Map (rooms, socketToRoom, socketToPlayer)
-- **모듈 구조:** RoomModule → GameModule 의존
-- **게임 로직:** 덱 생성(Fisher-Yates), 타일 배분, 조합 검증, 점수 계산
-
-## 라이센스
-
-MIT
-
-## 기여 가이드
-
-이 프로젝트에 기여하려면:
-
-1. 포크하고 브랜치 생성
-2. 변경사항 커밋
-3. 풀 요청 제출
-
-코드는 기존 스타일 가이드를 따르고, Prettier와 ESLint를 통과해야 합니다.
