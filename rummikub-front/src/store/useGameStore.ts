@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { arrayMove } from '@dnd-kit/sortable';
 import type { GameState, Tile, GameOverPayload } from '@/types/server.generated';
+import { autoSortTiles, type SortResult } from '@/utils/tileUtils';
 
 export interface GameStoreState {
   gameState: GameState | null;
@@ -8,6 +9,7 @@ export interface GameStoreState {
   isMyTurn: boolean;
   selectedTileIds: string[];
   errorMessage: string | null;
+  tileSortResult: SortResult | null;
 }
 
 export interface GameStoreActions {
@@ -20,6 +22,7 @@ export interface GameStoreActions {
   clearSelection: () => void;
   setErrorMessage: (message: string | null) => void;
   reorderMyTiles: (activeIndex: number, overIndex: number) => void;
+  sortMyTiles: () => void;
   reset: () => void;
 }
 
@@ -31,12 +34,16 @@ const initialState: GameStoreState = {
   isMyTurn: false,
   selectedTileIds: [],
   errorMessage: null,
+  tileSortResult: null,
 };
 
 export const useGameStore = create<GameStore>((set) => ({
   ...initialState,
   setGameState: (gameState) => set({ gameState }),
-  setMyTiles: (tiles) => set({ myTiles: tiles, selectedTileIds: [] }),
+  setMyTiles: (tiles) => {
+    const result = autoSortTiles(tiles);
+    return set({ myTiles: result.tiles, selectedTileIds: [], tileSortResult: result });
+  },
   setIsMyTurn: (isMyTurn) => set({ isMyTurn }),
   setDeckCount: (deckCount) =>
     set((state) => ({
@@ -58,6 +65,12 @@ export const useGameStore = create<GameStore>((set) => ({
   reorderMyTiles: (activeIndex, overIndex) =>
     set((state) => ({
       myTiles: arrayMove(state.myTiles, activeIndex, overIndex),
+      tileSortResult: null,
     })),
+  sortMyTiles: () =>
+    set((state) => {
+      const result = autoSortTiles(state.myTiles);
+      return { myTiles: result.tiles, selectedTileIds: [], tileSortResult: result };
+    }),
   reset: () => set(initialState),
 }));
