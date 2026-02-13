@@ -18,8 +18,8 @@ function PlayerInfoBar() {
         return (
           <div
             key={player.id}
-            className={`flex min-w-0 shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm ${
-              isTurn ? 'bg-emerald-100 ring-2 ring-emerald-400' : 'bg-zinc-50'
+            className={`flex min-w-0 shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm border ${
+              isTurn ? 'bg-emerald-100 border-emerald-400' : 'bg-zinc-50'
             }`}
           >
             <span className={`truncate font-medium ${isMe ? 'text-blue-600' : 'text-zinc-700'}`}>
