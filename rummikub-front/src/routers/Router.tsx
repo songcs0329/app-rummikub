@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider, type RouteObject } from 'react-router';
 import Layout from '@/components/Layout';
 import Home from '@/pages/Home';
+import NotFound from '@/pages/NotFound';
 import Room from '@/pages/Room';
 
 function Router() {
@@ -10,6 +11,7 @@ function Router() {
       children: [
         { index: true, Component: Home },
         { path: '/room/:roomCode', Component: Room },
+        { path: '*', Component: NotFound },
       ],
     },
   ];
