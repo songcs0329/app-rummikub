@@ -11,6 +11,7 @@ import {
 import GameHeader from './GameHeader';
 import GameBoard from './GameBoard';
 import PlayerInfoBar from './PlayerInfoBar';
+import GameBottomSheet from './GameBottomSheet';
 import TileRack from './TileRack';
 import StagingArea from './StagingArea';
 import GameActions from './GameActions';
@@ -72,21 +73,26 @@ function GameView() {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex flex-1 flex-col gap-3">
+      <div className="flex flex-1 flex-col gap-3 pb-37.5">
         <div className="sticky top-0 flex flex-col gap-4">
           <GameHeader />
           <PlayerInfoBar />
         </div>
 
         <GameBoard />
+      </div>
 
-        <div className="sticky bottom-0 flex flex-col gap-4">
-          <StagingArea />
+      <GameBottomSheet>
+        <div className="flex flex-col gap-4 overflow-y-auto px-4 pb-4">
           <TileRack />
+          <StagingArea />
           <GameActions />
         </div>
-      </div>
-      <DragOverlay>{activeTile ? <TileComponent tile={activeTile} isDragging /> : null}</DragOverlay>
+      </GameBottomSheet>
+
+      <DragOverlay style={{ zIndex: 50 }}>
+        {activeTile ? <TileComponent tile={activeTile} isDragging /> : null}
+      </DragOverlay>
     </DndContext>
   );
 }
