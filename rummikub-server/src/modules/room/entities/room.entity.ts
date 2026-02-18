@@ -15,6 +15,7 @@ export class Room {
   winner: Player | null;
   consecutivePasses: number;
   placedThisTurn: boolean;
+  drewTileThisTurn: boolean;
 
   constructor(roomCode: string) {
     this.roomCode = roomCode;
@@ -29,6 +30,7 @@ export class Room {
     this.winner = null;
     this.consecutivePasses = 0;
     this.placedThisTurn = false;
+    this.drewTileThisTurn = false;
   }
 
   get host(): Player | null {
@@ -44,6 +46,7 @@ export class Room {
     this.currentTurnIndex =
       (this.currentTurnIndex + 1) % this.players.length;
     this.placedThisTurn = false;
+    this.drewTileThisTurn = false;
   }
 
   canStart(): boolean {
