@@ -8,3 +8,7 @@ export class PlayerActionDto {
 export class PlaceCombinationDto extends PlayerActionDto {
   combination: any;
 }
+
+export class PlaceMultipleCombinationsDto extends PlayerActionDto {
+  combinations: any[];
+}
