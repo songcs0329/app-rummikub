@@ -23,6 +23,7 @@ export function useGameEvents() {
   const setDeckCount = useGameStore((state) => state.setDeckCount);
   const setGameOver = useGameStore((state) => state.setGameOver);
   const setErrorMessage = useGameStore((state) => state.setErrorMessage);
+  const clearAllStaged = useGameStore((state) => state.clearAllStaged);
 
   useEffect(() => {
     if (!socket || !isConnected || !gameState) return;
@@ -40,6 +41,7 @@ export function useGameEvents() {
 
     // 내 타일 갱신: 조합 배치 후 서버에서 보내는 업데이트된 타일 목록
     const handleMyTilesUpdated = (data: MyTilesUpdatedPayload) => {
+      clearAllStaged();
       setMyTiles(data.tiles);
     };
 
@@ -99,5 +101,6 @@ export function useGameEvents() {
     setDeckCount,
     setGameOver,
     setErrorMessage,
+    clearAllStaged,
   ]);
 }

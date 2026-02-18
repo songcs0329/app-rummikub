@@ -117,6 +117,7 @@ export class RoomService {
     room.currentTurnIndex = 0;
     room.consecutivePasses = 0;
     room.placedThisTurn = false;
+    room.drewTileThisTurn = false;
 
     return room;
   }
@@ -132,12 +133,21 @@ export class RoomService {
       throw new BadRequestException('당신의 턴이 아닙니다.');
     }
 
+    if (room.placedThisTurn) {
+      throw new BadRequestException('이미 조합을 제출했습니다. 턴을 종료하세요.');
+    }
+
+    if (room.drewTileThisTurn) {
+      throw new BadRequestException('이번 턴에 이미 타일을 뽑았습니다.');
+    }
+
     if (room.deck.length === 0) {
       throw new BadRequestException('더 이상 뽑을 타일이 없습니다.');
     }
 
     const tile = room.deck.shift()!;
     player!.tiles.push(tile);
+    room.drewTileThisTurn = true;
 
     return {
       tile,
@@ -277,6 +287,55 @@ export class RoomService {
       }
     });
 
+    return room;
+  }
+
+  placeMultipleCombinations(
+    roomCode: string,
+    socketId: string,
+    combinations: any[],
+  ): Room {
+    const room = this.findRoom(roomCode);
+    const player = this.findPlayerBySocket(room, socketId);
+
+    if (!player || room.currentPlayer?.id !== player.id) {
+      throw new BadRequestException('당신의 턴이 아닙니다.');
+    }
+
+    if (combinations.length === 0) {
+      throw new BadRequestException('제출할 조합이 없습니다.');
+    }
+
+    // 각 조합 유효성 검사
+    for (const combo of combinations) {
+      const combinationType = this.gameService.validateCombination(combo.tiles);
+      if (!combinationType) {
+        throw new BadRequestException('유효하지 않은 조합이 포함되어 있습니다.');
+      }
+    }
+
+    // 첫 멜드: 전체 조합 합산 30점 이상 검증
+    if (!player.hasInitialMeld) {
+      if (!this.gameService.validateInitialMeldMultiple(combinations)) {
+        throw new BadRequestException(
+          '첫 멜드는 최소 30점 이상이어야 합니다.',
+        );
+      }
+      player.hasInitialMeld = true;
+    }
+
+    // 모든 조합 보드에 추가 및 손패에서 제거
+    for (const combo of combinations) {
+      room.board.push(combo);
+      combo.tiles.forEach((tile: any) => {
+        const index = player.tiles.findIndex((t) => t.id === tile.id);
+        if (index !== -1) {
+          player.tiles.splice(index, 1);
+        }
+      });
+    }
+
+    room.placedThisTurn = true;
     return room;
   }
 

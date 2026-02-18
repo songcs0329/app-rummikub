@@ -46,6 +46,8 @@ export interface GameState {
   gameStarted: boolean;
   gameOver: boolean;
   winner: PlayerPublicInfo | null;
+  placedThisTurn: boolean;
+  drewTileThisTurn: boolean;
 }
 
 export interface CreateRoomDto {
@@ -63,6 +65,10 @@ export interface PlayerActionDto {
 
 export interface PlaceCombinationDto extends PlayerActionDto {
   combination: { tiles: Tile[]; type: CombinationType };
+}
+
+export interface PlaceMultipleCombinationsDto extends PlayerActionDto {
+  combinations: { tiles: Tile[]; type: CombinationType }[];
 }
 
 export interface RejoinRoomDto {

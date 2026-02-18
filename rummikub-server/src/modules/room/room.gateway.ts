@@ -14,6 +14,7 @@ import {
   JoinRoomDto,
   PlayerActionDto,
   PlaceCombinationDto,
+  PlaceMultipleCombinationsDto,
   RejoinRoomDto,
 } from './dto';
 import { GameState } from '../game/entities/game-state.entity';
@@ -241,6 +242,36 @@ export class RoomGateway
         data.roomCode,
         client.id,
         data.combination,
+      );
+
+      const gameState = GameState.fromRoom(room);
+
+      this.server.to(data.roomCode).emit('boardUpdated', {
+        gameState,
+      });
+
+      const myTiles = this.roomService.getPlayerTiles(
+        data.roomCode,
+        client.id,
+      );
+      client.emit('myTilesUpdated', {
+        tiles: myTiles,
+      });
+    } catch (error) {
+      client.emit('error', { message: error.message });
+    }
+  }
+
+  @SubscribeMessage('placeMultipleCombinations')
+  handlePlaceMultipleCombinations(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: PlaceMultipleCombinationsDto,
+  ) {
+    try {
+      const room = this.roomService.placeMultipleCombinations(
+        data.roomCode,
+        client.id,
+        data.combinations,
       );
 
       const gameState = GameState.fromRoom(room);

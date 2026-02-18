@@ -104,9 +104,52 @@ export class GameService {
     );
   }
 
+  calculateCombinationValue(tiles: Tile[]): number {
+    const nonJokers = tiles.filter((t) => !t.isJoker);
+    const jokerCount = tiles.filter((t) => t.isJoker).length;
+
+    if (nonJokers.length === 0) return 0;
+
+    if (this.validateRun(tiles)) {
+      const sorted = [...nonJokers].sort((a, b) => a.number - b.number);
+      let total = 0;
+      let remaining = jokerCount;
+      let expected = sorted[0].number;
+
+      for (const tile of sorted) {
+        while (tile.number > expected && remaining > 0) {
+          total += expected;
+          remaining--;
+          expected++;
+        }
+        total += tile.number;
+        expected++;
+      }
+
+      while (remaining > 0) {
+        total += expected;
+        expected++;
+        remaining--;
+      }
+
+      return total;
+    }
+
+    if (this.validateGroup(tiles)) {
+      const commonNumber = nonJokers[0].number;
+      return tiles.length * commonNumber;
+    }
+
+    return nonJokers.reduce((sum, t) => sum + t.number, 0);
+  }
+
   validateInitialMeld(tiles: Tile[]): boolean {
-    const totalValue = tiles.reduce(
-      (sum, t) => sum + (t.isJoker ? 0 : t.number),
+    return this.calculateCombinationValue(tiles) >= GAME_CONSTANTS.MIN_INITIAL_MELD_VALUE;
+  }
+
+  validateInitialMeldMultiple(combinations: { tiles: Tile[] }[]): boolean {
+    const totalValue = combinations.reduce(
+      (sum, c) => sum + this.calculateCombinationValue(c.tiles),
       0,
     );
     return totalValue >= GAME_CONSTANTS.MIN_INITIAL_MELD_VALUE;

@@ -9,6 +9,8 @@ export class GameState {
   gameStarted: boolean;
   gameOver: boolean;
   winner: any | null;
+  placedThisTurn: boolean;
+  drewTileThisTurn: boolean;
 
   static fromRoom(room: Room) {
     const state = new GameState();
@@ -20,6 +22,8 @@ export class GameState {
     state.gameStarted = room.gameStarted;
     state.gameOver = room.gameOver;
     state.winner = room.winner ? room.winner.toPublicInfo() : null;
+    state.placedThisTurn = room.placedThisTurn;
+    state.drewTileThisTurn = room.drewTileThisTurn;
     return state;
   }
 }
