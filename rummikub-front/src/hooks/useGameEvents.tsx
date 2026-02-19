@@ -11,10 +11,12 @@ import type {
 } from '@/types/server.generated';
 import { useSocketStore } from '@/store/useSocketStore';
 import { useGameStore } from '@/store/useGameStore';
+import { useCustomerStore } from '@/store/useCustomerStore';
 
 export function useGameEvents() {
   const socket = useSocketStore((state) => state.socket);
   const isConnected = useSocketStore((state) => state.isConnected);
+  const customer = useCustomerStore((state) => state.customer);
 
   const gameState = useGameStore((state) => state.gameState);
   const setGameState = useGameStore((state) => state.setGameState);
@@ -26,12 +28,13 @@ export function useGameEvents() {
   const clearAllStaged = useGameStore((state) => state.clearAllStaged);
 
   useEffect(() => {
-    if (!socket || !isConnected || !gameState) return;
+    if (!socket || !isConnected || !gameState || !customer) return;
 
-    // 타일 뽑기 결과: 내 타일 목록 + 덱 잔여 수 갱신
+    // 타일 뽑기 결과: 내 타일 목록 + 덱 잔여 수 갱신 후 자동 턴 종료
     const handleTileDrawn = (data: TileDrawnPayload) => {
       setMyTiles(data.myTiles);
       setDeckCount(data.deckCount);
+      if (customer.roomCode) socket.emit('endTurn', { roomCode: customer.roomCode });
     };
 
     // 보드 변경: 다른 플레이어가 조합을 놓았을 때 게임 상태 갱신
@@ -39,10 +42,11 @@ export function useGameEvents() {
       setGameState(data.gameState);
     };
 
-    // 내 타일 갱신: 조합 배치 후 서버에서 보내는 업데이트된 타일 목록
+    // 내 타일 갱신: 조합 배치 후 서버에서 보내는 업데이트된 타일 목록 후 자동 턴 종료
     const handleMyTilesUpdated = (data: MyTilesUpdatedPayload) => {
       clearAllStaged();
       setMyTiles(data.tiles);
+      if (customer.roomCode) socket.emit('endTurn', { roomCode: customer.roomCode });
     };
 
     // 턴 변경: 다음 플레이어로 턴이 넘어갔을 때 게임 상태 갱신 및 내 턴 해제
@@ -102,5 +106,6 @@ export function useGameEvents() {
     setGameOver,
     setErrorMessage,
     clearAllStaged,
+    customer,
   ]);
 }
