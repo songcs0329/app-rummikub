@@ -27,6 +27,7 @@ function GameBottomSheet({ children }: GameBottomSheetProps) {
       disableDismiss
       disableScrollLocking
       style={{ zIndex: 40 }}
+      className="max-w-105 mx-auto"
     >
       <Sheet.Container className="shadow-[0_-2px_10px_rgba(0,0,0,0.08)]!">
         <Sheet.Header />
