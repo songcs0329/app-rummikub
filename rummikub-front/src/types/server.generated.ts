@@ -71,6 +71,10 @@ export interface PlaceMultipleCombinationsDto extends PlayerActionDto {
   combinations: { tiles: Tile[]; type: CombinationType }[];
 }
 
+export interface SubmitBoardStateDto extends PlayerActionDto {
+  combinations: { tiles: Tile[] }[];
+}
+
 export interface RejoinRoomDto {
   roomCode: string;
   playerId: string;

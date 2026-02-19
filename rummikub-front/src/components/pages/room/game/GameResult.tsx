@@ -27,13 +27,16 @@ function GameResult(props: GameResultProps) {
         <h2 className="text-2xl font-bold">{winner.nickname} 승리!</h2>
       </div>
       <div className="flex flex-col gap-3">
-        {players
-          .sort((a, b) => a.score - b.score)
+        {/* RULES.md: 승자는 양수(+), 패자는 음수(-) → 높을수록 좋음 (내림차순 정렬) */}
+        {[...players]
+          .sort((a, b) => b.score - a.score)
           .map((player, index) => (
             <div key={player.id} className="flex items-center gap-3 text-sm">
               <span className="w-6 text-center font-bold text-zinc-400">{index + 1}</span>
               <span className="font-medium">{player.nickname}</span>
-              <span className="text-zinc-500">{player.score}점</span>
+              <span className={player.score >= 0 ? 'font-semibold text-emerald-600' : 'font-semibold text-red-500'}>
+                {player.score > 0 ? `+${player.score}` : player.score}점
+              </span>
             </div>
           ))}
       </div>

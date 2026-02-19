@@ -1,7 +1,6 @@
 import GameHeader from './GameHeader';
 import GameBoard from './GameBoard';
 import PlayerInfoBar from './PlayerInfoBar';
-import GameBottomSheet from './GameBottomSheet';
 import TileRack from './TileRack';
 import StagingArea from './StagingArea';
 import GameActions from './GameActions';
@@ -22,7 +21,7 @@ function GameView() {
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-3 pb-37.5">
+    <div className="flex flex-1 flex-col gap-3">
       <div className="sticky top-0 flex flex-col gap-4">
         <GameHeader />
         <PlayerInfoBar />
@@ -30,13 +29,11 @@ function GameView() {
 
       <GameBoard />
 
-      <GameBottomSheet>
-        <div className="flex flex-col gap-4 overflow-y-auto px-4 pb-4">
-          <TileRack />
-          <StagingArea />
-          <GameActions />
-        </div>
-      </GameBottomSheet>
+      <div className="flex flex-col gap-4 sticky bottom-0">
+        <TileRack />
+        <StagingArea />
+        <GameActions />
+      </div>
     </div>
   );
 }

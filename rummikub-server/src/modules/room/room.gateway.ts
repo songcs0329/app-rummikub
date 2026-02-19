@@ -15,6 +15,7 @@ import {
   PlayerActionDto,
   PlaceCombinationDto,
   PlaceMultipleCombinationsDto,
+  SubmitBoardStateDto,
   RejoinRoomDto,
 } from './dto';
 import { GameState } from '../game/entities/game-state.entity';
@@ -284,6 +285,33 @@ export class RoomGateway
         data.roomCode,
         client.id,
       );
+      client.emit('myTilesUpdated', {
+        tiles: myTiles,
+      });
+    } catch (error) {
+      client.emit('error', { message: error.message });
+    }
+  }
+
+  @SubscribeMessage('submitBoardState')
+  handleSubmitBoardState(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: SubmitBoardStateDto,
+  ) {
+    try {
+      const room = this.roomService.submitBoardState(
+        data.roomCode,
+        client.id,
+        data.combinations,
+      );
+
+      const gameState = GameState.fromRoom(room);
+
+      this.server.to(data.roomCode).emit('boardUpdated', {
+        gameState,
+      });
+
+      const myTiles = this.roomService.getPlayerTiles(data.roomCode, client.id);
       client.emit('myTilesUpdated', {
         tiles: myTiles,
       });
