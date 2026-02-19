@@ -62,10 +62,7 @@ function GameActions() {
       .filter((combo) => combo.tiles.length > 0);
 
     // 새 보드 = 나머지 기존 조합 + 스테이징된 새 조합
-    const newBoard = [
-      ...remainingBoardCombos,
-      ...stagedCombinations.map((tiles) => ({ tiles })),
-    ];
+    const newBoard = [...remainingBoardCombos, ...stagedCombinations.map((tiles) => ({ tiles }))];
 
     socket.emit('submitBoardState', {
       roomCode: customer.roomCode,
@@ -94,7 +91,7 @@ function GameActions() {
   };
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 bg-white p-3 rounded-lg">
       {errorMessage && <div className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">{errorMessage}</div>}
 
       <div className="flex gap-2">

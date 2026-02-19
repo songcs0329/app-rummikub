@@ -40,7 +40,7 @@ function GameBoard() {
         <div className="flex flex-wrap gap-4">
           {gameState.board.map((combination, index) => {
             return (
-              <div key={index} className="flex gap-0.5 rounded-md bg-white/80 p-1.5 shadow-sm">
+              <div key={index} className="flex gap-0.5 rounded-md bg-white/80 p-1.5 shadow-sm flex-wrap">
                 {combination.tiles.map((tile) => {
                   const isSelected = selectedBoardTileIds.includes(tile.id);
                   const isStaged = stagedBoardTileIds.has(tile.id);

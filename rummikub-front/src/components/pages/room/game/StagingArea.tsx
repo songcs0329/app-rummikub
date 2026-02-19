@@ -55,7 +55,7 @@ function StagedCombo({ tiles, comboIndex }: { tiles: Tile[]; comboIndex: number 
     <div className="flex items-center gap-1 rounded-md border border-emerald-200 bg-white/80 p-1.5 shadow-sm">
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={tiles.map((t) => t.id)} strategy={horizontalListSortingStrategy}>
-          <div className="flex gap-0.5">
+          <div className="flex gap-0.5 w-full overflow-hidden flex-wrap">
             {tiles.map((tile) => (
               <StagedSortableTile key={tile.id} tile={tile} />
             ))}
