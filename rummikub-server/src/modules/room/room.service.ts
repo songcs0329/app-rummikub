@@ -6,6 +6,8 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { Room } from './entities/room.entity';
 import { Player } from './entities/player.entity';
+import { Combination } from '../game/entities/combination.entity';
+import { Tile } from '../game/entities/tile.entity';
 import { GameService } from '../game/game.service';
 import { GAME_CONSTANTS } from '../../common/constants/game.constants';
 
@@ -167,9 +169,17 @@ export class RoomService {
     if (player!.tiles.length === 0) {
       room.gameOver = true;
       room.winner = player ?? null;
+      // 패배자: 잔여 타일 합산을 음수로 반영
+      let loserTotal = 0;
       room.players.forEach((p) => {
-        p.score = this.gameService.calculatePlayerScore(p.tiles);
+        if (p.id !== player!.id) {
+          const penalty = this.gameService.calculatePlayerScore(p.tiles);
+          p.score -= penalty;
+          loserTotal += penalty;
+        }
       });
+      // 승자: 모든 패배자 잔여 타일 합산을 양수로 획득
+      player!.score += loserTotal;
       return room;
     }
 
@@ -180,18 +190,35 @@ export class RoomService {
       room.consecutivePasses++;
     }
 
-    // 조건 ②: 더미 소진 + 전원 연속 패스 → 남은 타일 합계가 가장 낮은 플레이어 승리
+    // 조건 ②: 더미 소진 + 전원 연속 패스 → 잔여 타일이 가장 적은 플레이어 승리
     if (
       room.deck.length === 0 &&
       room.consecutivePasses >= room.players.length
     ) {
       room.gameOver = true;
+      // 각 플레이어 잔여 타일 페널티 미리 계산
+      const penalties = new Map<string, number>();
       room.players.forEach((p) => {
-        p.score = this.gameService.calculatePlayerScore(p.tiles);
+        penalties.set(p.id, this.gameService.calculatePlayerScore(p.tiles));
       });
-      room.winner = room.players.reduce((min, p) =>
-        p.score < min.score ? p : min,
-      );
+      // 페널티가 가장 낮은 플레이어가 승자
+      room.winner = room.players.reduce((minPlayer, p) => {
+        const minPenalty = penalties.get(minPlayer.id) ?? 0;
+        const pPenalty = penalties.get(p.id) ?? 0;
+        return pPenalty < minPenalty ? p : minPlayer;
+      });
+      // 패배자: 잔여 타일 합산 음수 반영
+      const winnerId = room.winner.id;
+      let loserTotal = 0;
+      room.players.forEach((p) => {
+        const penalty = penalties.get(p.id) ?? 0;
+        if (p.id !== winnerId) {
+          p.score -= penalty;
+          loserTotal += penalty;
+        }
+      });
+      // 승자: 패배자 합산 양수 획득
+      room.winner.score += loserTotal;
     } else {
       room.nextTurn();
     }
@@ -286,6 +313,79 @@ export class RoomService {
         player.tiles.splice(index, 1);
       }
     });
+
+    return room;
+  }
+
+  /**
+   * 보드 전체 상태 제출 (기존 조합 조작 포함)
+   * RULES.md: 기존 조합을 조작하여 타일을 추가·분리·재배열 가능.
+   * 조커 교체도 이 방식으로 처리됨 (조커가 다른 조합으로 이동 가능).
+   */
+  submitBoardState(
+    roomCode: string,
+    socketId: string,
+    combinations: { tiles: { id: string; number: number; color: string | null; isJoker: boolean }[] }[],
+  ): Room {
+    const room = this.findRoom(roomCode);
+    const player = this.findPlayerBySocket(room, socketId);
+
+    if (!player || room.currentPlayer?.id !== player.id) {
+      throw new BadRequestException('당신의 턴이 아닙니다.');
+    }
+
+    if (room.drewTileThisTurn) {
+      throw new BadRequestException('타일을 뽑은 후에는 조합을 배치할 수 없습니다.');
+    }
+
+    if (combinations.length === 0) {
+      throw new BadRequestException('제출할 조합이 없습니다.');
+    }
+
+    // 타일 풀 구성 (기존 보드 + 손패)
+    const tilePool = new Map<string, Tile>();
+    room.board.forEach((c) => c.tiles.forEach((t) => tilePool.set(t.id, t)));
+    player.tiles.forEach((t) => tilePool.set(t.id, t));
+
+    // 클라이언트 타일 데이터를 실제 Tile 객체로 변환
+    const newCombinationsWithTiles = combinations.map((combo) => ({
+      tiles: combo.tiles.map((t) => {
+        const tile = tilePool.get(t.id);
+        if (!tile) throw new BadRequestException(`타일을 찾을 수 없습니다: ${t.id}`);
+        return tile;
+      }),
+    }));
+
+    // 유효성 검증 (validateBoardState)
+    const validation = this.gameService.validateBoardState(
+      newCombinationsWithTiles,
+      room.board,
+      player.tiles,
+      player.hasInitialMeld,
+    );
+
+    if (!validation.valid) {
+      throw new BadRequestException(validation.error);
+    }
+
+    // 새 보드 구성
+    const newBoardTileIds = new Set(combinations.flatMap((c) => c.tiles.map((t) => t.id)));
+    const newBoard = newCombinationsWithTiles.map((combo) => {
+      const type = this.gameService.validateCombination(combo.tiles)!;
+      return new Combination(combo.tiles, type);
+    });
+
+    // 손패에서 보드에 사용된 타일 제거
+    player.tiles = player.tiles.filter((t) => !newBoardTileIds.has(t.id));
+
+    // 첫 공개 처리
+    if (!player.hasInitialMeld) {
+      player.hasInitialMeld = true;
+    }
+
+    // 보드 교체
+    room.board = newBoard;
+    room.placedThisTurn = true;
 
     return room;
   }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Tile, TileColor } from './entities/tile.entity';
-import { CombinationType } from './entities/combination.entity';
+import { Combination, CombinationType } from './entities/combination.entity';
 import {
   GAME_CONSTANTS,
   TILE_COLORS,
@@ -165,5 +165,77 @@ export class GameService {
       (sum, tile) => sum + this.calculateTileValue(tile),
       0,
     );
+  }
+
+  /**
+   * 보드 전체 상태 제출 유효성 검증 (기존 조합 조작 포함)
+   * - 각 조합이 유효한 런 or 그룹인지 검증
+   * - 새 보드 타일 = 기존 보드 타일 ∪ 손패 타일 (외부 타일 불가)
+   * - 기존 보드 타일이 하나도 누락되지 않았는지 검증
+   * - 손패 타일 1장 이상 사용 검증
+   * - 첫 공개 전: 기존 보드 타일과 손패 타일 혼합 불가, 30점 이상 조건
+   */
+  validateBoardState(
+    newCombinations: { tiles: Tile[] }[],
+    oldBoard: Combination[],
+    playerTiles: Tile[],
+    hasInitialMeld: boolean,
+  ): { valid: true } | { valid: false; error: string } {
+    const oldBoardTileIds = new Set(oldBoard.flatMap((c) => c.tiles.map((t) => t.id)));
+    const playerTileIds = new Set(playerTiles.map((t) => t.id));
+    const newBoardTileIds = new Set(newCombinations.flatMap((c) => c.tiles.map((t) => t.id)));
+
+    // 각 조합 유효성 검증
+    for (const combo of newCombinations) {
+      const type = this.validateCombination(combo.tiles);
+      if (!type) {
+        return { valid: false, error: '유효하지 않은 조합이 포함되어 있습니다.' };
+      }
+    }
+
+    // 새 보드 타일이 기존 보드 ∪ 손패 안에 있는지 검증
+    for (const id of newBoardTileIds) {
+      if (!oldBoardTileIds.has(id) && !playerTileIds.has(id)) {
+        return { valid: false, error: '유효하지 않은 타일이 포함되어 있습니다.' };
+      }
+    }
+
+    // 기존 보드 타일이 모두 새 보드에 있는지 검증 (누락 불가)
+    for (const id of oldBoardTileIds) {
+      if (!newBoardTileIds.has(id)) {
+        return { valid: false, error: '기존 보드의 타일이 누락되었습니다.' };
+      }
+    }
+
+    // 거치대 타일 1장 이상 사용 검증
+    const handTilesPlaced = [...newBoardTileIds].filter((id) => playerTileIds.has(id));
+    if (handTilesPlaced.length === 0) {
+      return { valid: false, error: '거치대 타일을 1장 이상 내려놓아야 합니다.' };
+    }
+
+    if (!hasInitialMeld) {
+      // 첫 공개 전: 기존 보드 타일을 손패 타일과 혼합하는 조합 불가
+      for (const combo of newCombinations) {
+        const hasBoardTile = combo.tiles.some((t) => oldBoardTileIds.has(t.id));
+        const hasHandTile = combo.tiles.some((t) => playerTileIds.has(t.id));
+        if (hasBoardTile && hasHandTile) {
+          return { valid: false, error: '첫 공개 전에는 기존 조합을 조작할 수 없습니다.' };
+        }
+      }
+
+      // 첫 공개 조건: 손패 타일로만 구성된 조합 합산 30점 이상
+      const handOnlyCombos = newCombinations.filter((combo) =>
+        combo.tiles.every((t) => playerTileIds.has(t.id)),
+      );
+      const totalValue = handOnlyCombos.reduce(
+        (sum, combo) => sum + this.calculateCombinationValue(combo.tiles),
+        0,
+      );
+      if (totalValue < GAME_CONSTANTS.MIN_INITIAL_MELD_VALUE) {
+        return { valid: false, error: '첫 공개는 30점 이상이어야 합니다.' };
+      }
+    }
+
+    return { valid: true };
   }
 }
