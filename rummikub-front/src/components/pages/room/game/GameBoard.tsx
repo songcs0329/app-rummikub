@@ -41,25 +41,27 @@ function GameBoard() {
           {gameState.board.map((combination, index) => {
             return (
               <div key={index} className="flex gap-0.5 rounded-md bg-white/80 p-1.5 shadow-sm flex-wrap">
-                {combination.tiles.map((tile) => {
-                  const isSelected = selectedBoardTileIds.includes(tile.id);
-                  const isStaged = stagedBoardTileIds.has(tile.id);
-                  return (
-                    <div
-                      key={tile.id}
-                      onClick={() => handleBoardTileClick(tile.id)}
-                      className={[
-                        canManipulateBoard && !isStaged ? 'cursor-pointer' : '',
-                        isSelected ? 'rounded ring-2 ring-blue-400' : '',
-                        isStaged ? 'opacity-30' : '',
-                      ]
-                        .filter(Boolean)
-                        .join(' ')}
-                    >
-                      <TileComponent tile={tile} size="sm" />
-                    </div>
-                  );
-                })}
+                {combination.tiles
+                  .sort((a, b) => a.number - b.number)
+                  .map((tile) => {
+                    const isSelected = selectedBoardTileIds.includes(tile.id);
+                    const isStaged = stagedBoardTileIds.has(tile.id);
+                    return (
+                      <div
+                        key={tile.id}
+                        onClick={() => handleBoardTileClick(tile.id)}
+                        className={[
+                          canManipulateBoard && !isStaged ? 'cursor-pointer' : '',
+                          isSelected ? 'rounded ring-2 ring-blue-400' : '',
+                          isStaged ? 'opacity-30' : '',
+                        ]
+                          .filter(Boolean)
+                          .join(' ')}
+                      >
+                        <TileComponent tile={tile} size="sm" />
+                      </div>
+                    );
+                  })}
               </div>
             );
           })}

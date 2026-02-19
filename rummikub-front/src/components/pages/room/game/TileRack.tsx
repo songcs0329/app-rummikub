@@ -65,15 +65,17 @@ function TileRack() {
         </div>
         <SortableContext items={tileIds} strategy={rectSortingStrategy}>
           <div className="flex flex-wrap gap-1">
-            {myTiles.map((tile) => (
-              <SortableTile
-                key={tile.id}
-                tile={tile}
-                isSelected={selectedTileIds.includes(tile.id)}
-                onSelect={() => toggleTileSelection(tile.id)}
-                disabled={!isMyTurn}
-              />
-            ))}
+            {myTiles
+              .sort((a, b) => a.number - b.number)
+              .map((tile) => (
+                <SortableTile
+                  key={tile.id}
+                  tile={tile}
+                  isSelected={selectedTileIds.includes(tile.id)}
+                  onSelect={() => toggleTileSelection(tile.id)}
+                  disabled={!isMyTurn}
+                />
+              ))}
           </div>
         </SortableContext>
       </div>
