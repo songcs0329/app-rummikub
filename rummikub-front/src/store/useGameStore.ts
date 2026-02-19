@@ -7,6 +7,7 @@ export interface GameStoreState {
   myTiles: Tile[];
   isMyTurn: boolean;
   selectedTileIds: string[];
+  selectedBoardTileIds: string[];
   stagedCombinations: Tile[][];
   errorMessage: string | null;
 }
@@ -18,7 +19,9 @@ export interface GameStoreActions {
   setDeckCount: (deckCount: number) => void;
   setGameOver: (data: GameOverPayload) => void;
   toggleTileSelection: (tileId: string) => void;
+  toggleBoardTileSelection: (tileId: string) => void;
   clearSelection: () => void;
+  clearBoardSelection: () => void;
   stageCombination: () => void;
   unstageCombo: (index: number) => void;
   reorderStagedTile: (comboIndex: number, from: number, to: number) => void;
@@ -35,6 +38,7 @@ const initialState: GameStoreState = {
   myTiles: [],
   isMyTurn: false,
   selectedTileIds: [],
+  selectedBoardTileIds: [],
   stagedCombinations: [],
   errorMessage: null,
 };
@@ -59,28 +63,62 @@ export const useGameStore = create<GameStore>((set) => ({
         ? state.selectedTileIds.filter((id) => id !== tileId)
         : [...state.selectedTileIds, tileId],
     })),
+  toggleBoardTileSelection: (tileId) =>
+    set((state) => ({
+      selectedBoardTileIds: state.selectedBoardTileIds.includes(tileId)
+        ? state.selectedBoardTileIds.filter((id) => id !== tileId)
+        : [...state.selectedBoardTileIds, tileId],
+    })),
   clearSelection: () => set({ selectedTileIds: [] }),
+  clearBoardSelection: () => set({ selectedBoardTileIds: [] }),
   stageCombination: () =>
     set((state) => {
-      if (state.selectedTileIds.length === 0) return state;
-      // selectedTileIds 순서대로 타일 추출 (조커 위치 보존)
-      const tiles = state.selectedTileIds
+      const hasHandTiles = state.selectedTileIds.length > 0;
+      const hasBoardTiles = state.selectedBoardTileIds.length > 0;
+      if (!hasHandTiles && !hasBoardTiles) return state;
+
+      // 손패 타일: selectedTileIds 순서대로 추출 (조커 위치 보존)
+      const handTiles = state.selectedTileIds
         .map((id) => state.myTiles.find((t) => t.id === id))
         .filter((t): t is Tile => t !== undefined);
-      const stagedIds = new Set(state.selectedTileIds);
+
+      // 보드 타일: gameState.board에서 추출
+      const boardTileMap = new Map<string, Tile>();
+      state.gameState?.board.forEach((combo) => combo.tiles.forEach((t) => boardTileMap.set(t.id, t)));
+      const boardTiles = state.selectedBoardTileIds
+        .map((id) => boardTileMap.get(id))
+        .filter((t): t is Tile => t !== undefined);
+
+      const allTiles = [...handTiles, ...boardTiles];
+      const stagedHandIds = new Set(state.selectedTileIds);
+
       return {
-        stagedCombinations: [...state.stagedCombinations, tiles],
-        myTiles: state.myTiles.filter((t) => !stagedIds.has(t.id)),
+        stagedCombinations: [...state.stagedCombinations, allTiles],
+        myTiles: state.myTiles.filter((t) => !stagedHandIds.has(t.id)),
         selectedTileIds: [],
+        selectedBoardTileIds: [],
       };
     }),
   unstageCombo: (index) =>
     set((state) => {
       const combo = state.stagedCombinations[index];
       if (!combo) return state;
+
+      // 보드 타일 식별 (gameState.board에 ID가 있는 타일)
+      const allBoardTileIds = new Set(
+        state.gameState?.board.flatMap((c) => c.tiles.map((t) => t.id)) ?? [],
+      );
+
+      // 손패 타일 → myTiles로 반환, 보드 타일 → selectedBoardTileIds로 반환
+      const handTilesInCombo = combo.filter((t) => !allBoardTileIds.has(t.id));
+      const boardTileIdsInCombo = combo
+        .filter((t) => allBoardTileIds.has(t.id))
+        .map((t) => t.id);
+
       return {
         stagedCombinations: state.stagedCombinations.filter((_, i) => i !== index),
-        myTiles: [...state.myTiles, ...combo],
+        myTiles: [...state.myTiles, ...handTilesInCombo],
+        selectedBoardTileIds: [...state.selectedBoardTileIds, ...boardTileIdsInCombo],
       };
     }),
   reorderStagedTile: (comboIndex, from, to) =>
@@ -90,7 +128,7 @@ export const useGameStore = create<GameStore>((set) => ({
       );
       return { stagedCombinations: updated };
     }),
-  clearAllStaged: () => set({ stagedCombinations: [] }),
+  clearAllStaged: () => set({ stagedCombinations: [], selectedBoardTileIds: [] }),
   setErrorMessage: (message) => set({ errorMessage: message }),
   reorderMyTiles: (activeIndex, overIndex) =>
     set((state) => ({
