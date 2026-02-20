@@ -15,47 +15,53 @@
 - **socket.io-client** — WebSocket 클라이언트
 - **React Router 7** — 라우팅
 - **Tailwind CSS** — 유틸리티 기반 스타일링
+- **Motion** — UI 애니메이션
 
 ### 백엔드 (`rummikub-server/`)
 
 - **NestJS 11 + TypeScript** — 확장 가능한 서버 아키텍처
 - **Socket.io** — WebSocket 게이트웨이
-- **class-validator** — 데이터 검증
+- **class-validator / class-transformer** — 데이터 검증
 - **in-memory storage** — Room, Player, GameState 저장소
 
-### 통신
+## 통신 방식
 
 **REST API 없음** - 모든 통신은 Socket.io WebSocket 이벤트 기반입니다.
 
-**클라이언트 → 서버:** `createRoom`, `joinRoom`, `findRoom`, `playerReady`, `startGame`, `drawTile`, `placeCombination`, `endTurn`, `leaveRoom`
+### 클라이언트 → 서버
 
-**서버 → 클라이언트:** `roomCreated`, `joinedRoom`, `roomFound`, `playerJoined`, `playerLeft`, `playerStatusChanged`, `gameStarted`, `tileDrawn`, `boardUpdated`, `myTilesUpdated`, `turnChanged`, `yourTurn`, `gameOver`, `deckUpdated`, `error`
+| 이벤트             | 설명                 |
+| ------------------ | -------------------- |
+| `createRoom`       | 새 방 생성           |
+| `joinRoom`         | 방 입장              |
+| `findRoom`         | 방 정보 조회         |
+| `rejoinRoom`       | 재접속               |
+| `playerReady`      | 준비 상태 토글       |
+| `startGame`        | 게임 시작 (호스트만) |
+| `drawTile`         | 타일 뽑기            |
+| `submitBoardState` | 보드 전체 상태 제출  |
+| `endTurn`          | 턴 종료              |
+| `leaveRoom`        | 방 나가기            |
 
-## 프로젝트 구조
+### 서버 → 클라이언트
 
-```
-app-rummikub/
-├── rummikub-front/        # React 프론트엔드
-│   ├── src/
-│   │   ├── components/    # React 컴포넌트
-│   │   ├── hooks/         # 커스텀 훅
-│   │   ├── pages/         # 페이지
-│   │   ├── store/         # Zustand 스토어
-│   │   └── types/         # TypeScript 타입
-│   ├── package.json
-│   └── vite.config.ts
-│
-├── rummikub-server/       # NestJS 백엔드
-│   ├── src/
-│   │   ├── modules/       # NestJS 모듈 (room, game)
-│   │   │   ├── room/      # 방 관리 (gateway, service, dto, entities)
-│   │   │   └── game/      # 게임 로직 (service, entities)
-│   │   └── common/        # 공통 (constants)
-│   ├── package.json
-│   └── nest-cli.json
-│
-└── README.md             # 이 파일
-```
+| 이벤트                | 설명                          |
+| --------------------- | ----------------------------- |
+| `roomCreated`         | 방 생성 성공                  |
+| `joinedRoom`          | 방 입장 성공                  |
+| `roomFound`           | 방 정보 응답                  |
+| `playerJoined`        | 새 플레이어 입장              |
+| `playerLeft`          | 플레이어 퇴장                 |
+| `playerStatusChanged` | 준비 상태 변경                |
+| `gameStarted`         | 게임 시작                     |
+| `tileDrawn`           | 타일 뽑기 완료 (자동 턴 종료) |
+| `boardUpdated`        | 보드 상태 변경                |
+| `myTilesUpdated`      | 내 손패 업데이트              |
+| `turnChanged`         | 턴 변경                       |
+| `yourTurn`            | 현재 플레이어 턴 알림         |
+| `gameOver`            | 게임 종료                     |
+| `deckUpdated`         | 덱 상태 변경                  |
+| `error`               | 오류 발생                     |
 
 ## 빠른 시작
 
@@ -71,29 +77,29 @@ git clone <repository-url>
 cd app-rummikub
 ```
 
-### 2단계: 프론트엔드 설정
-
-```bash
-cd rummikub-front
-npm install
-# .env 파일 생성 (아래 환경 변수 섹션 참고)
-npm run dev
-```
-
-개발 서버가 `http://localhost:5173`에서 실행됩니다.
-
-### 3단계: 백엔드 설정
-
-새 터미널에서:
+### 2단계: 백엔드 실행
 
 ```bash
 cd rummikub-server
 npm install
-# .env 파일 생성 (아래 환경 변수 섹션 참고)
+# .env.development 파일 생성 (환경 변수 섹션 참고)
 npm run start:dev
 ```
 
 백엔드가 `http://localhost:3000`에서 실행됩니다.
+
+### 3단계: 프론트엔드 실행
+
+새 터미널에서:
+
+```bash
+cd rummikub-front
+npm install
+# .env.development 파일이 이미 존재 (환경 변수 섹션 참고)
+npm run dev
+```
+
+개발 서버가 `http://localhost:5173`에서 실행됩니다.
 
 ### 4단계: 브라우저에서 접속
 
@@ -101,13 +107,13 @@ npm run start:dev
 
 ## 환경 변수
 
-### 프론트엔드 (`.env`)
+### 프론트엔드 (`.env.development`)
 
 ```env
 VITE_APP_API_URL=http://localhost:3000
 ```
 
-### 백엔드 (`.env`)
+### 백엔드 (`.env.development`)
 
 ```env
 PORT=3000
@@ -119,13 +125,12 @@ NODE_ENV=development
 
 ### 프론트엔드 (`rummikub-front/`)
 
-| 명령어                   | 설명                                        |
-| ------------------------ | ------------------------------------------- |
-| `npm run dev`            | Vite 개발 서버 시작 (http://localhost:5173) |
-| `npm run build`          | TypeScript 컴파일 후 프로덕션 빌드          |
-| `npm run lint`           | ESLint로 코드 검사                          |
-| `npm run preview`        | 프로덕션 빌드 미리보기                      |
-| `npm run generate:types` | 타입 정의 자동 생성                         |
+| 명령어            | 설명                               |
+| ----------------- | ---------------------------------- |
+| `npm run dev`     | Vite 개발 서버 시작                |
+| `npm run build`   | TypeScript 컴파일 후 프로덕션 빌드 |
+| `npm run lint`    | ESLint 코드 검사                   |
+| `npm run preview` | 프로덕션 빌드 미리보기             |
 
 ### 백엔드 (`rummikub-server/`)
 
@@ -140,41 +145,38 @@ NODE_ENV=development
 ### 기본 규칙
 
 - **플레이어 수:** 2~4명
-- **초기 타일:** 플레이어 당 14개
+- **초기 타일:** 플레이어당 14개
 - **방 코드:** 영숫자 6자리
 
 ### 타일 구성
 
-- 숫자: 1 ~ 13
+- 숫자: 1~13
 - 색상: 빨강, 파랑, 노랑, 검정 (4색)
-- 세트: 2개 (각 색상 당 1~13 숫자 × 2)
-- 조커: 2개 (와일드 카드 역할)
+- 세트: 2개 (각 색상별 1~13 × 2)
+- 조커: 2개
 - **총 106개 타일**
-
-### 첫 멜드 규칙 (초기 조합)
-
-- 합계가 **30점 이상**이어야 함
-- 여러 개의 조합으로 이루어질 수 있음
-- 한 번 메모(첫 조합)하면 이후 턴부터 추가 조합 및 수정 가능
 
 ### 조합 규칙
 
-조합은 다음 두 가지 형태만 가능합니다:
+1. **런(Run):** 같은 색 연속 숫자 (최소 3개, 조커로 빈자리 가능)
+2. **그룹(Group):** 같은 숫자 다른 색 (최소 3개, 최대 4개, 같은 색 중복 불가)
 
-1. **런(Run):** 같은 색 연속 숫자 (예: 빨강 5, 6, 7, 8)
+### 첫 멜드 규칙
 
-   - 최소 3개 타일 필수
-
-2. **그룹(Group):** 같은 숫자 다른 색 (예: 검정 7, 파랑 7, 노랑 7)
-   - 최소 3개 타일 필수
-   - 같은 색 중복 불가
+- 합계 **30점 이상** 필수
+- 여러 조합으로 구성 가능
+- 첫 멜드 이후 기존 보드 타일 조작 가능
 
 ### 점수 계산
 
-- 숫자 1~12: 숫자 값만큼의 점수
-- 숫자 13: 13점
+- 숫자 1~13: 숫자값 그대로
 - 조커: 30점
 
-### 승리 조건
+### 게임 종료 조건
 
-첫 멜드 후 모든 타일을 먼저 내려놓는 플레이어가 승리합니다.
+1. **손패 소진:** 가장 먼저 손패를 모두 내려놓은 플레이어 승리
+2. **덱 소진 + 전원 연속 패스:** 남은 손패 합계가 가장 낮은 플레이어 승리
+
+### 재접속 기능
+
+연결이 끊긴 후 **30초 이내** 재접속 시 기존 게임 상태(손패, 턴, 점수)가 완전히 복구됩니다.
